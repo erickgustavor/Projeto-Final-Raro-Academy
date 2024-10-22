@@ -16,7 +16,7 @@ class Account(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
-    cpf = models.CharField(max_length=11)
+    cpf = models.CharField(max_length=11, unique=True)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     type = models.CharField(

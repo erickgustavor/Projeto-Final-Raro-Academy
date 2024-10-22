@@ -16,21 +16,6 @@ def process_registration(request):
     form = AccountRegistrationForm(request.POST)
 
     if form.is_valid():
-        cpf = form.cleaned_data.get('cpf')
-        username = form.cleaned_data.get('username')
-        email = form.cleaned_data.get('email')
-        password = form.cleaned_data.get('password')
-        confirm_password = form.cleaned_data.get('confirm_password')
-
-        try:
-            validate_cpf(cpf)
-            validate_username(username)
-            validate_email(email)
-            validate_password(password, confirm_password)
-        except ValidationError as e:
-            messages.error(request, str(e.message))
-            return render(request, 'registration/register.html', {'form': form})
-
         account = form.save(commit=False)
         account.is_active = False
         account.save()
