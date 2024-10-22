@@ -1,7 +1,7 @@
 from django.db import models
 from enum import Enum
 from django.contrib.auth.hashers import make_password
-from validations import validate_cpf
+from .validations import validate_cpf
 
 class AccountType(Enum):
     FREE = "free"
