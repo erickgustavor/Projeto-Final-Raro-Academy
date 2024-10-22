@@ -1,7 +1,6 @@
 from django.db import models
 from enum import Enum
 from django.contrib.auth.hashers import make_password
-from .validations import validate_cpf
 
 class AccountType(Enum):
     FREE = "free"
@@ -14,10 +13,10 @@ class AccountType(Enum):
 
 
 class Account(models.Model):
-    username = models.CharField(max_length=100, unique=True)
+    username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100, unique=True)
-    cpf = models.CharField(max_length=11, unique=True)
+    email = models.EmailField(max_length=100)
+    cpf = models.CharField(max_length=11)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     type = models.CharField(
@@ -27,7 +26,6 @@ class Account(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        validate_cpf(self.cpf)
         self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
