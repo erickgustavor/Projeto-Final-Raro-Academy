@@ -19,13 +19,9 @@ class AccountRegistrationForm(forms.ModelForm):
             'email': 'E-mail',
             'cpf': 'CPF',
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-
-        if password != confirm_password:
-            raise forms.ValidationError('As senhas não coincidem.')
-        return cleaned_data
+        error_messages = {
+            'username': {
+                'required': 'Este campo é obrigatório.',
+            }
+        }
 

@@ -1,7 +1,6 @@
 from django.db import models
 from enum import Enum
 from django.contrib.auth.hashers import make_password
-from .validations import validate_cpf
 
 class AccountType(Enum):
     FREE = "free"
@@ -27,7 +26,6 @@ class Account(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        validate_cpf(self.cpf)
         self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
