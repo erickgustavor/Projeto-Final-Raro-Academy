@@ -1,5 +1,7 @@
 from django import forms
 from .models import Account
+from .validations import validate_cpf, validate_username, validate_email, validate_password
+from django.core.exceptions import ValidationError
 
 class AccountRegistrationForm(forms.ModelForm):
     password = forms.CharField(
@@ -21,7 +23,30 @@ class AccountRegistrationForm(forms.ModelForm):
         }
         error_messages = {
             'username': {
-                'required': 'Este campo é obrigatório.',
+                'required': 'O campo "Nome" é obrigatório.',
             }
         }
 
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get('cpf')
+        validate_cpf(cpf)
+        return cpf
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        validate_username(username) 
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        validate_email(email)
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        validate_password(password, confirm_password)
+
+        return cleaned_data
