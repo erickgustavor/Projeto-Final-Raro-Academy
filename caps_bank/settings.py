@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "Account",
     "group",
+    "investments",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
