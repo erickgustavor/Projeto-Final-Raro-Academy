@@ -17,6 +17,7 @@
         <p>{{ form.confirm_password.label_tag }} {{ form.confirm_password }}</p>
 
         <button type="submit">Cadastrar</button>
+        <a href="{% url 'login' %}">Já cadastrado?</a>
     </form>
     
     {% if messages %}

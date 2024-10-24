@@ -1,14 +1,22 @@
+from datetime import timedelta
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views import View
 
-from account.forms.login_forms import LoginForm
-from account.forms.registration_forms import AccountRegistrationForm
+from account.forms import (
+    AccountRegistrationForm,
+    LoginForm,
+    RecoveryPasswordConfirmForm,
+    RecoveryPasswordRequestForm,
+)
 
-from .models import Account
+from .models import Account, RecoveryToken
 
 
 class RegisterView(View):
@@ -92,6 +100,69 @@ class ConfirmView(View):
         account.save()
 
         return redirect("login")
+
+
+class RecoveryPasswordView(View):
+    def get(self, request, *args, **kwargs):
+        return render(
+            request,
+            "registration/recovery_password.html",
+            {
+                "request_form": RecoveryPasswordRequestForm(),
+                "confirm_form": RecoveryPasswordConfirmForm(),
+            },
+        )
+
+    def post(self, request, *args, **kwargs):
+        form = RecoveryPasswordRequestForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get("email")
+            account = Account.objects.get(email=email)
+
+            token = RecoveryToken(account=account)
+            token.save()
+
+            subject = "Recuperação de Senha"
+            message = "O token para mudar de senha é:\n\n" f"{token.value}"
+            from_email = settings.DEFAULT_FROM_EMAIL
+
+            send_mail(subject, message, from_email, [email])
+            messages.info(request, "O token foi enviado pelo email.")
+
+            return redirect("password-recovery")
+
+        return render(
+            request,
+            "registration/recovery_password.html",
+            {
+                "request_form": form,
+                "confirm_form": RecoveryPasswordConfirmForm(),
+            },
+        )
+
+
+class RecoveryPasswordConfirmView(View):
+    def post(self, request, *args, **kwargs):
+        form = RecoveryPasswordConfirmForm(data=request.POST)
+        print(request.POST)
+        if form.is_valid():
+            token_value = form.cleaned_data.get("token")
+            token = RecoveryToken.objects.get(value=token_value)
+            password = form.cleaned_data.get("password")
+
+            token_age = timezone.now() - token.created_at
+
+            if token_age < timedelta(hours=2):
+                account = token.account
+                account.set_password(password)
+                account.save()
+                token.delete()
+                messages.success(request, "A senha foi alterada com sucesso.")
+                return redirect("login")
+
+            messages.error("O código expirou, solicite outro código.")
+
+        return redirect("password-recovery")
 
 
 class HomeView(LoginRequiredMixin, View):
