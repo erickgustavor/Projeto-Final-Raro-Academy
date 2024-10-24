@@ -7,7 +7,7 @@
 </head>
 <body>
     <h2>Entre na sua conta</h2>
-    <form method="post" action="{% url 'login_process' %}">
+    <form method="post" action="">
         {% csrf_token %}
         {{ form.email.label_tag }}
         {{ form.email }}
@@ -16,7 +16,7 @@
         {{ form.password }}
         <p></p>
         <button type="submit">Entrar</button>
-        <a href="{% url 'registration_form' %}" > Cadastre-se</a>
+        <a href="{% url 'register' %}" > Cadastre-se</a>
     </form>
 
     <p>
