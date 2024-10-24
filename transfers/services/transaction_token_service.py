@@ -1,5 +1,4 @@
 from django.utils import timezone
-from allauth.account.utils import send_mail as allauth_send_mail
 from transfers.models import Transaction
 import random, string, os
 
@@ -20,7 +19,7 @@ class TransactionTokenService:
     def send_token_email(self):
 
         subject = 'Token para confirmação da transferência'
-        message = f'Seu token de confirmação é: {self.token}. Ele expira em {self.token_expiration.strftime("%H:%M:%S")}.'  # Mensagem com expiração
+        message = f'Seu token de confirmação é: {self.token}. Ele expira em {self.token_expiration.strftime("%H:%M:%S")}.'
         recipient_email = self.transaction_data['from_account'].email 
 
         allauth_send_mail(subject, message, recipient_email)    
@@ -38,6 +37,7 @@ class TransactionTokenService:
                 amount=self.transaction_data['amount'],
                 token=self.token
             )
+            
             transaction.save()
             return "Transação confirmada com sucesso!"
         

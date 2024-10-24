@@ -1,9 +1,9 @@
 from django import forms
-from .models import Account
-from .validations import validate_cpf, validate_username, validate_email, validate_password
-from django.core.exceptions import ValidationError
+from account.models import Account
+from account.validations.registration_validations import validate_cpf, validate_username, validate_email, validate_password
 
 class AccountRegistrationForm(forms.ModelForm):
+    email = forms.CharField()
     password = forms.CharField(
         widget=forms.PasswordInput,
         label='Senha'

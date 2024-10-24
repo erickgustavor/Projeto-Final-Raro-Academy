@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Entre na sua conta</h2>
+    <form method="post" action="{% url 'login_process' %}">
+        {% csrf_token %}
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        <p></p>
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        <p></p>
+        <button type="submit">Entrar</button>
+        <a href="{% url 'registration_form' %}" > Cadastre-se</a>
+    </form>
+
+    <p>
+    {% for error in form.non_field_errors %}
+        {{ error }}
+    {% endfor %} </p>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+</body>
+</html>
