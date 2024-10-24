@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from Account.models import Account
+from account.models import Account
 
 
 class ProductInvestment(models.Model):
