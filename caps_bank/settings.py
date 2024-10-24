@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_USER_MODEL = "account.Account"
 # Application definition
 
 INSTALLED_APPS = [
@@ -62,7 +62,7 @@ ROOT_URLCONF = "caps_bank.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
