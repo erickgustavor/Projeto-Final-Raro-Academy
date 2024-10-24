@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_USER_MODEL = "account.Account"
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,10 +43,6 @@ INSTALLED_APPS = [
     "group",
     "investments",
     "transfers",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    # "allauth.socialaccount.providers.google",
 ]
 
 SITE_ID = 1
@@ -60,7 +56,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "caps_bank.urls"
@@ -68,7 +63,7 @@ ROOT_URLCONF = "caps_bank.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -138,12 +133,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # Backend padrão do Django
-    "allauth.account.auth_backends.AuthenticationBackend",  # Backend do Django Allauth
 ]
-
-# Para obrigar a confirmação de email
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_EMAIL_REQUIRED = True
 
 # URL de redirecionamento após login/logout
 LOGIN_REDIRECT_URL = "/"

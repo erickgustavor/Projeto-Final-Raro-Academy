@@ -1,8 +1,7 @@
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-
-from Account.models import Account, AccountType
+from account.models import Account, AccountType
 
 
 class Group(models.Model):

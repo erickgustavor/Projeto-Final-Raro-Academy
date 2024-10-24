@@ -17,7 +17,7 @@ class ProductInvestment(models.Model):
 
 
 class Investment(models.Model):
-    Account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
     product = models.ForeignKey(ProductInvestment, on_delete=models.CASCADE)
     applied_value = models.DecimalField(max_digits=10, decimal_places=2)
     accumulated_income = models.DecimalField(

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("Account", "0002_alter_account_cpf_alter_account_email_and_more"),
+        ("account", "0002_alter_account_cpf_alter_account_email_and_more"),
         ("group", "0001_initial"),
     ]
 
@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="group",
             name="accounts",
-            field=models.ManyToManyField(related_name="group", to="Account.account"),
+            field=models.ManyToManyField(related_name="group", to="account.account"),
         ),
     ]
