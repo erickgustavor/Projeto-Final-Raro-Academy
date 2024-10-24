@@ -1,10 +1,9 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.decorators.http import require_GET, require_POST
 
 from account.forms.login_forms import LoginForm
 from account.forms.registration_forms import AccountRegistrationForm
@@ -87,7 +86,7 @@ class LogoutView(View):
 class ConfirmView(View):
     def get(request, *args, **kwargs):
         account_id = kwargs["account_id"]
-        
+
         account = get_object_or_404(Account, id=account_id)
         account.is_active = True
         account.save()
@@ -95,6 +94,6 @@ class ConfirmView(View):
         return redirect("login")
 
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, "home.html")
