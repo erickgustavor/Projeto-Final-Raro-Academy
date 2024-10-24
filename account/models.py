@@ -1,11 +1,10 @@
-from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
 from enum import Enum
-from django.contrib.auth.hashers import make_password, check_password
+
+from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.db import models
+
+from .managers import AccountManager
 
 
 class AccountType(Enum):
@@ -16,30 +15,6 @@ class AccountType(Enum):
     @classmethod
     def choices(cls):
         return [(item.value, item.name.capitalize()) for item in cls]
-
-
-class AccountManager(BaseUserManager):
-    def create_user(self, username, email, cpf, password, save=False, **extra_fields):
-        if not username:
-            raise ValueError("O nome de usuário é obrigatório")
-        if not email:
-            raise ValueError("O email é obrigatório")
-        if not cpf:
-            raise ValueError("O CPF é obrigatório")
-
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email, cpf=cpf, **extra_fields)
-        user.set_password(password)
-        if save:
-            user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, cpf, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
-
-        return self.create_user(email, cpf, password, **extra_fields)
 
 
 class Account(AbstractBaseUser, PermissionsMixin):
