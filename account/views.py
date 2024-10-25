@@ -144,7 +144,6 @@ class RecoveryPasswordView(View):
 class RecoveryPasswordConfirmView(View):
     def post(self, request, *args, **kwargs):
         form = RecoveryPasswordConfirmForm(data=request.POST)
-        print(request.POST)
         if form.is_valid():
             token_value = form.cleaned_data.get("token")
             token = RecoveryToken.objects.get(value=token_value)

@@ -3,7 +3,7 @@
 
 ### Pyenv ###
 .python-version
-
+icons/*
 
 ### Django ###
 *.log
