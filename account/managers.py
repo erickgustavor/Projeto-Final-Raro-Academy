@@ -17,9 +17,12 @@ class AccountManager(BaseUserManager):
             user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, cpf, password=None, **extra_fields):
+    def create_superuser(self, username, email, cpf, password=None, **extra_fields):
+
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
 
-        return self.create_user(email, cpf, password, **extra_fields)
+        return self.create_user(
+            username, email, cpf, password, save=True, **extra_fields
+        )

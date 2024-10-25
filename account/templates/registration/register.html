@@ -17,16 +17,18 @@
         <p>{{ form.confirm_password.label_tag }} {{ form.confirm_password }}</p>
 
         <button type="submit">Cadastrar</button>
+        <a href="{% url 'login' %}">Já cadastrado?</a>
     </form>
     
     {% if messages %}
         <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
         </ul>
     {% endif %}
     
+    <!-- Exibição de erros do formulário de solicitação -->
     {% if form.non_field_errors %}
         <ul>
             {% for error in form.non_field_errors %}
@@ -35,22 +37,12 @@
         </ul>
     {% endif %}
 
-    {% for error in form.username.errors %}
-        <ul>
-            <li>{{ error }}</li>
-        </ul>
-    {% endfor %}
-
-    {% for error in form.cpf.errors %}
-        <ul>
-            <li>{{ error }}</li>
-        </ul>
-    {% endfor %}
-
-    {% for error in form.email.errors %}
-        <ul>
-            <li>{{ error }}</li>
-        </ul>
+    {% for field in form %}
+        {% for error in field.errors %}
+            <ul>
+                <li>{{ error }}</li>
+            </ul>
+        {% endfor %}
     {% endfor %}
 </body>
 </html>

@@ -9,5 +9,13 @@
     <h1>Bem-vindo à Página Inicial!</h1>
     <p>Você está logado.</p>
     <a href="{% url 'logout' %}">Sair</a>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
 </body>
 </html>

@@ -1,4 +1,5 @@
 from enum import Enum
+from uuid import uuid4
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -36,3 +37,10 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class RecoveryToken(models.Model):
+    value = models.CharField(default=uuid4, max_length=200)
+    is_active = models.BooleanField(default=True)
+    account = models.ForeignKey(Account, related_name="token", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
