@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        /* Adiciona estilos para o formulário invisível */
+        #transaction-form {
+            display: none;
+            position: absolute; /* Para posicionar adequadamente o formulário */
+            z-index: 1000; /* Para garantir que ele fique acima de outros elementos */
+            background: white; /* Fundo branco para o formulário */
+            padding: 20px; /* Espaçamento interno */
+            border: 1px solid #ccc; /* Borda para o formulário */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para o formulário */
+        }
+    </style>
 </head>
 <body>
     <h1>Bem-vindo à Página Inicial!</h1>
@@ -16,6 +28,39 @@
             {% endfor %}
         </ul>
     {% endif %}
-    
+
+    <h1>Histórico de Transferências</h1>
+    <div id="transaction-history">
+        {% for transaction in transactions %}
+            <p>{{ transaction }}</p>
+        {% empty %}
+            <p>Nenhuma transferência realizada ainda.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Botão para mostrar o formulário -->
+    <button id="show-form-button">Fazer Transferência</button>
+
+    <!-- Formulário invisível -->
+    <div id="transaction-form">
+        {% include 'transaction_form.html' %}
+    </div>
+
+    <script>
+        const showFormButton = document.getElementById('show-form-button');
+        const formDiv = document.getElementById('transaction-form');
+
+        showFormButton.addEventListener('click', function() {
+            formDiv.style.display = (formDiv.style.display === 'none') ? 'block' : 'none';
+        });
+
+        // Ocultar o formulário ao clicar fora dele
+        document.addEventListener('click', function(event) {
+            const isClickInside = formDiv.contains(event.target) || showFormButton.contains(event.target);
+            if (!isClickInside) {
+                formDiv.style.display = 'none'; // Oculta o formulário
+            }
+        });
+    </script>
 </body>
 </html>
