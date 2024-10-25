@@ -1,4 +1,7 @@
 <h2>Transferência</h2>
+<h1>Saldo
+    $ {{ balance }}</h1>
+</h1>
 <form method="post" action="{% url 'transaction' %}">
     {% csrf_token %}
     {{ form.as_p }}

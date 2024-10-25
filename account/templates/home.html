@@ -29,6 +29,10 @@
         </ul>
     {% endif %}
 
+    <h1>Saldo
+        $ {{ balance }}</h1>
+    </h1>
+
     <h1>Histórico de Transferências</h1>
     <div id="transaction-history">
         {% for transaction in transactions %}
@@ -38,10 +42,8 @@
         {% endfor %}
     </div>
 
-    <!-- Botão para mostrar o formulário -->
     <button id="show-form-button">Fazer Transferência</button>
 
-    <!-- Formulário invisível -->
     <div id="transaction-form">
         {% include 'transaction_form.html' %}
     </div>
@@ -54,11 +56,11 @@
             formDiv.style.display = (formDiv.style.display === 'none') ? 'block' : 'none';
         });
 
-        // Ocultar o formulário ao clicar fora dele
+        
         document.addEventListener('click', function(event) {
             const isClickInside = formDiv.contains(event.target) || showFormButton.contains(event.target);
             if (!isClickInside) {
-                formDiv.style.display = 'none'; // Oculta o formulário
+                formDiv.style.display = 'none';
             }
         });
     </script>

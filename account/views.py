@@ -175,4 +175,5 @@ class HomeView(LoginRequiredMixin, View):
             to_account=request.user
         )
 
-        return render(request, "home.html", {"form": form, "transactions": transactions})
+
+        return render(request, "home.html", {"form": form, "transactions": transactions, "balance": request.user.balance})
