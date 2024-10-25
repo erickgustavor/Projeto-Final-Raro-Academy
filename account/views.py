@@ -163,7 +163,6 @@ class RecoveryPasswordConfirmView(View):
 
         for error in form.non_field_errors():
             messages.error(request, error)
-            print(error)
         return redirect("password-recovery")
 
 
