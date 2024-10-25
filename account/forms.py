@@ -15,7 +15,7 @@ class RecoveryPasswordRequestForm(forms.Form):
     def clean_email(self):
         email = self.data.get("email")
         if not Account.objects.filter(email=email).exists():
-            return ValidationError(
+            raise ValidationError(
                 "Não há nenhuma conta com esse email, por favor, verifique o email novamente."
             )
 
@@ -36,7 +36,7 @@ class RecoveryPasswordConfirmForm(forms.Form):
         confirm_password = cleaned_data.get("confirm_password")
 
         validate_password(password, confirm_password)
-
+        
         if not RecoveryToken.objects.filter(value=token):
             raise ValidationError("Código informado não existe ou expirou.")
 

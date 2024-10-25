@@ -42,7 +42,7 @@ class RegisterView(View):
             subject = "Confirmação de Registro"
             message = (
                 "Obrigado por se registrar! Por favor, ative sua conta clicando no link abaixo:\n\n"
-                f"http://{request.get_host()}/account/confirm/{account.id}/"
+                f"http://{request.get_host()}/accounts/confirm/{account.id}/"
             )
             from_email = settings.DEFAULT_FROM_EMAIL
             to_email = form.cleaned_data.get("email")
@@ -161,6 +161,9 @@ class RecoveryPasswordConfirmView(View):
 
             messages.error("O código expirou, solicite outro código.")
 
+        for error in form.non_field_errors():
+            messages.error(request, error)
+            print(error)
         return redirect("password-recovery")
 
 

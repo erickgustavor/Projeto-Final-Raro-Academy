@@ -40,7 +40,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 
 class RecoveryToken(models.Model):
-    value = models.UUIDField(default=uuid4)
+    value = models.CharField(default=uuid4, max_length=200)
     is_active = models.BooleanField(default=True)
     account = models.ForeignKey(Account, related_name="token", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
