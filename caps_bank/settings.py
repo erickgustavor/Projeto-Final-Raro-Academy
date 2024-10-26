@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
+from celery.schedules import crontab, timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +27,20 @@ SECRET_KEY = "django-insecure-@sjv9!3ilw%h921%h5&x^0g-te!8n5+c53vb$nwkt4*wfywxsv
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+# CELERY:
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_BEAT_SCHEDULE = {
+    "print-hello-every-10-seconds": {
+        "task": "account.tasks.print_hello",
+        "schedule": timedelta(seconds=10),
+    },
+}
+
 
 ALLOWED_HOSTS = []
 
@@ -125,7 +141,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
