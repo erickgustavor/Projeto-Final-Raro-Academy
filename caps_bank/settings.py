@@ -34,14 +34,6 @@ CELERY_BROKER_URL = "redis://redis:6379/0"
 CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
-CELERY_BEAT_SCHEDULE = {
-    "print-hello-every-10-seconds": {
-        "task": "account.tasks.print_hello",
-        "schedule": timedelta(seconds=10),
-    },
-}
-
-
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = "account.Account"
