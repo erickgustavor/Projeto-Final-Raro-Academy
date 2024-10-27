@@ -15,7 +15,6 @@ python manage.py makemigrations
 python manage.py migrate
 echo "====================="
 
-
 echo "Iniciando todos os serviços..."
 echo "=============================="
 
