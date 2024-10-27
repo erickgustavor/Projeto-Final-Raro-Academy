@@ -19,7 +19,7 @@
 </head>
 <body>
     <h1>Bem-vindo à Página Inicial!</h1>
-    <p>Você está logado.</p>
+    <p>Olá, {{user.username}}! Você está logado.</p>
     <a href="{% url 'logout' %}">Sair</a>
     {% if messages %}
         <ul>
@@ -27,6 +27,10 @@
                 <li>{{ message }}</li>
             {% endfor %}
         </ul>
+    {% endif %}
+
+    {% if request.session.success_message %}
+        <p>{{ request.session.success_message }}</p>
     {% endif %}
 
     <h1>Saldo
