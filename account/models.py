@@ -1,10 +1,7 @@
 from enum import Enum
 from uuid import uuid4
-
-from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-
 from .managers import AccountManager
 
 
