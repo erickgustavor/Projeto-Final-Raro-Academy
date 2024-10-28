@@ -1,5 +1,4 @@
 from datetime import timedelta
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -8,15 +7,15 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
-
+from .models import Account, RecoveryToken
+from transfers.models import Transaction
+from transfers.forms import TransactionForm
 from account.forms import (
     AccountRegistrationForm,
     LoginForm,
     RecoveryPasswordConfirmForm,
     RecoveryPasswordRequestForm,
 )
-
-from .models import Account, RecoveryToken
 
 
 class RegisterView(View):
@@ -168,4 +167,13 @@ class RecoveryPasswordConfirmView(View):
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, "home.html")
+        form = TransactionForm()
+
+        transactions = Transaction.objects.filter(
+            from_account=request.user
+        ) | Transaction.objects.filter(
+            to_account=request.user
+        )
+
+
+        return render(request, "home.html", {"form": form, "transactions": transactions, "balance": request.user.balance})

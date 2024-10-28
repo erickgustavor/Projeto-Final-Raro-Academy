@@ -1,6 +1,8 @@
 from django.utils import timezone
+from django.core.mail import send_mail
 from transfers.models import Transaction
 import random, string, os
+
 
 class TransactionTokenService:
     def __init__(self, transaction_data):
@@ -21,8 +23,7 @@ class TransactionTokenService:
         subject = 'Token para confirmação da transferência'
         message = f'Seu token de confirmação é: {self.token}. Ele expira em {self.token_expiration.strftime("%H:%M:%S")}.'
         recipient_email = self.transaction_data['from_account'].email 
-
-        allauth_send_mail(subject, message, recipient_email)    
+        send_mail(subject, message, 'squadtech.capsbank@gmail.com', [recipient_email])
 
     def confirm_transaction(self, token_input):
 
