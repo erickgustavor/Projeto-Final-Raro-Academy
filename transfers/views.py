@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 from django.views import View
 from django.utils import timezone
+from django.core.mail import send_mail
 from .models import Transaction
 from account.models import Account
 from transfers.models import Transaction
@@ -78,6 +80,15 @@ class ConfirmTransactionView(View):
             to_account.balance += amount
             from_account.save()
             to_account.save()
+
+            send_mail(
+                'Transação Confirmada',
+                f'Sua transação de R$ {amount:.2f} foi realizada com sucesso para o CPF {to_account.cpf}.',
+                settings.DEFAULT_FROM_EMAIL,
+                [from_account.email],
+                fail_silently=False,
+            )
+
 
             request.session['success_message'] = "Transação confirmada com sucesso!"
             return redirect('home')
