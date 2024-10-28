@@ -16,6 +16,7 @@ class ProductInvestment(models.Model):
     minimum_value = models.DecimalField(
         max_digits=10, decimal_places=2, verbose_name="valor mínimo"
     )
+    is_premium = models.BooleanField(default=False, verbose_name="premium")
 
     def __str__(self):
         return f"{self.name}"
