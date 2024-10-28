@@ -83,12 +83,19 @@ class ConfirmTransactionView(View):
 
             send_mail(
                 'Transação Confirmada',
-                f'Sua transação de R$ {amount:.2f} foi realizada com sucesso para o CPF {to_account.cpf}.',
+                f'Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.',
                 settings.DEFAULT_FROM_EMAIL,
                 [from_account.email],
                 fail_silently=False,
             )
 
+            send_mail(
+                'Você recebeu uma transação',
+                f'Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).',
+                settings.DEFAULT_FROM_EMAIL,
+                [to_account.email],
+                fail_silently=False,
+            )
 
             request.session['success_message'] = "Transação confirmada com sucesso!"
             return redirect('home')
