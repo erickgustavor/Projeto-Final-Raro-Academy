@@ -1,18 +1,14 @@
 from django.core.exceptions import ValidationError
+from validate_docbr import CPF
 import re
 from account.models import Account  
 
 def validate_cpf(cpf):
-    cpf = re.sub(r'\D', '', cpf)
 
-    if len(cpf) != 11:
-        raise ValidationError('CPF deve ter 11 digítos.')
+    cpf_validator = CPF()
 
-    if cpf in ("00000000000", "11111111111", "22222222222", 
-               "33333333333", "44444444444", "55555555555", 
-               "66666666666", "77777777777", "88888888888", 
-               "99999999999"):
-        raise ValidationError('CPF Invalido.')
+    if not cpf_validator.validate(cpf):
+        raise ValidationError("CPF inválido.")
 
     if Account.objects.filter(cpf=cpf).exists():
         raise ValidationError('Já existe uma conta com este CPF.')
