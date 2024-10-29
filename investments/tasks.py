@@ -18,6 +18,7 @@ def update_income(self):
         raise self.retry(exc=exc)
     return "Atualização concluída com sucesso!"
 
+
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def update_selic(self):
     selic_indexer, _ = Indexer.objects.get_or_create(name="SELIC", rate=0)
@@ -30,6 +31,7 @@ def update_selic(self):
     except Exception as exc:
         raise self.retry(exc=exc)
     return f"Indexador SELIC atualizado: {selic_indexer.rate}"
+
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def finalize_investments(self):
