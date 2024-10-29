@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 import re
-from .models import Account
+from account.models import Account  
 
 def validate_cpf(cpf):
     cpf = re.sub(r'\D', '', cpf)
@@ -28,6 +28,11 @@ def validate_username(username):
 
 
 def validate_email(email):
+
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    
+    if not re.match(email_regex, email):
+        raise ValidationError('Endereço de e-mail inválido.')
 
     if Account.objects.filter(email=email).exists():
         raise ValidationError('Já existe uma conta com este E-mail.')

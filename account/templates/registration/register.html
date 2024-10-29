@@ -8,24 +8,23 @@
 <body>
     <h1>Cadastro de Usuário</h1>
 
-    <form method="post" action="{% url 'process_registration' %}">
+    <form method="post" action="">
         {% csrf_token %}
         <p>{{ form.username.label_tag }} {{ form.username }}</p>
-
-        
         <p>{{ form.email.label_tag }} {{ form.email }}</p>
         <p>{{ form.cpf.label_tag }} {{ form.cpf }}</p>
         <p>{{ form.password.label_tag }} {{ form.password }}</p>
         <p>{{ form.confirm_password.label_tag }} {{ form.confirm_password }}</p>
 
         <button type="submit">Cadastrar</button>
+        <a href="{% url 'login' %}">Já cadastrado?</a>
     </form>
     
     {% if messages %}
         <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
         </ul>
     {% endif %}
     
@@ -37,10 +36,12 @@
         </ul>
     {% endif %}
 
-    {% for error in form.username.errors %}
-        <ul>
-            <li>{{ error }}</li>
-        </ul>
+    {% for field in form %}
+        {% for error in field.errors %}
+            <ul>
+                <li>{{ error }}</li>
+            </ul>
+        {% endfor %}
     {% endfor %}
 </body>
 </html>
