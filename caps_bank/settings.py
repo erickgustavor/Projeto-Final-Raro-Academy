@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -148,3 +149,21 @@ EMAIL_HOST_USER = "squadtech.capsbank@gmail.com"
 EMAIL_HOST_PASSWORD = "qhzsjfsozztpveya"
 
 DEFAULT_FROM_EMAIL = "squadtech.capsbank@gmail.com"
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+CELERY_BEAT_SCHEDULE = {
+    "update-income-every-morning": {
+        "task": "investments.tasks.update_income",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "update-selic-indexer-every-morning": {
+        "task": "investments.tasks.update_selic",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "finalize-expired-investments-every-day": {
+        "task": "investments.tasks.finalize_investments",
+        "schedule": crontab(hour=0, minute=1),
+    },
+}
