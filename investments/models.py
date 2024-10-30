@@ -2,6 +2,7 @@ from enum import Enum
 from django.db import models
 from django.utils import timezone
 from account.models import Account
+from decimal import Decimal
 
 
 class InvestmentRangeDateEnum(Enum):
@@ -16,7 +17,10 @@ class Indexer(models.Model):
         null=True,
         blank=True
         )
-    rate = models.DecimalField(max_digits=5, decimal_places=2)
+    rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -26,13 +30,15 @@ class ProductInvestment(models.Model):
     name = models.CharField(max_length=100, verbose_name="nome")
     tax = models.DecimalField(
         max_digits=5, decimal_places=2,
-        verbose_name="taxa anual",
+        verbose_name="taxa administrativa anual",
         help_text="Taxa anual do produto"
     )
     index_multiplier = models.DecimalField(
-        max_digits=5, decimal_places=2,
+        max_digits=5,
+        decimal_places=2,
         default=1,
-        help_text="Multiplicador do indexador"
+        verbose_name="Multiplicador do indexador",
+        help_text="Multiplicador do indexador",
     )
     indexer = models.ForeignKey(Indexer, on_delete=models.CASCADE)
     range_date = models.IntegerField(
@@ -59,10 +65,10 @@ class ProductInvestment(models.Model):
 
     def get_daily_tax(self):
         tax_daily = (
-            (self.tax + (
-                self.indexer.rate * self.index_multiplier
+            (Decimal(self.tax) + (
+                Decimal(self.indexer.rate) * Decimal(self.index_multiplier)
                 )) / 365)/100
-        return tax_daily
+        return (tax_daily)
 
 
 class Investment(models.Model):

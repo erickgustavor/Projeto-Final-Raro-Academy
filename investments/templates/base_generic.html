@@ -20,7 +20,8 @@
 <body>
     <header>
         <h1>Sistema de Investimentos</h1>
-        <nav>
+        <br/><strong> Usuario: {{ user.username }}</strong><br/>
+    <strong> Saldo: {{ user.balance }}</strong><br/><br/>
             <a href="{% url 'product_list' %}">Produtos de Investimento</a>
         </nav>
     </header>

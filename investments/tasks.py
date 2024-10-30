@@ -1,4 +1,4 @@
-from investments.utils import get_selic_rate
+from investments.utils import get_selic_rate, get_cdi_rate, get_tjlp_rate
 from .models import Indexer, Investment
 from celery import shared_task
 from datetime import date
@@ -21,7 +21,8 @@ def update_income(self):
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def update_selic(self):
-    selic_indexer, _ = Indexer.objects.get_or_create(name="SELIC")
+    selic_indexer, _ = Indexer.objects.get_or_create(
+        name="SELIC")
     try:
         selic_rate = get_selic_rate()
         if not selic_rate:
@@ -31,6 +32,34 @@ def update_selic(self):
     except Exception as exc:
         raise self.retry(exc=exc)
     return f"Indexador SELIC atualizado: {selic_indexer.rate}"
+
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def update_cdi(self):
+    cdi_indexer, _ = Indexer.objects.get_or_create(name="CDI")
+    try:
+        cdi_rate = get_cdi_rate()
+        if not cdi_rate:
+            raise Exception("Não foi possível obter a taxa CDI")
+        cdi_indexer.rate = cdi_rate
+        cdi_indexer.save()
+    except Exception as exc:
+        raise self.retry(exc=exc)
+    return f"Indexador CDI atualizado: {cdi_indexer.rate}"
+
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=60)
+def update_tjlp(self):
+    tjlp_indexer, _ = Indexer.objects.get_or_create(name="TJLP")
+    try:
+        tjlp_rate = get_tjlp_rate()
+        if not tjlp_rate:
+            raise Exception("Não foi possível obter a taxa TJLP")
+        tjlp_indexer.rate = tjlp_rate
+        tjlp_indexer.save()
+    except Exception as exc:
+        raise self.retry(exc=exc)
+    return f"Indexador TJLP atualizado: {tjlp_indexer.rate}"
 
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)

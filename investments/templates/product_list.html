@@ -5,11 +5,13 @@
   <h2>Produtos de Investimento</h2>
   <ul>
     {% for product in products %}
-      <li>
-        <strong>{{ product.name }}</strong> - Taxa: {{ product.real_tax }}%
-        <a href="{% url 'product_detail' product.id %}">Ver Detalhes</a>
-        <strong>{{ user.balance }} teste 2</strong> 
+      <br/><li>
+      <strong>{{ product.name }}</strong><br/> - Premium: {{ product.is_premium }}<br/>
+        - <a href="{% url 'product_detail' product.id %}">Ver Detalhes</a><br/>
+         
       </li>
     {% endfor %}
+    <br/><strong> Usuario: {{ user.username }}</strong><br/>
+    <strong> Saldo: {{ user.balance }}</strong>
   </ul>
 {% endblock %}

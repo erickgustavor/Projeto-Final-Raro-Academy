@@ -14,8 +14,15 @@ def get_selic_rate():
         return None
 
 
-def get_ipca_rate():
-    ipca_data = sgs.get({"ipca": 433})
-    if not ipca_data.empty:
-        return ipca_data.iloc[0]["ipca"]
+def get_cdi_rate():
+    cdi_data = sgs.get({"cdi": 4389})
+    if not cdi_data.empty:
+        return cdi_data.iloc[-1]["cdi"]
+    return None
+
+
+def get_tjlp_rate():
+    tjlp_data = sgs.get({"tjlp": 256})
+    if not tjlp_data.empty:
+        return tjlp_data.iloc[-1]["tjlp"]
     return None
