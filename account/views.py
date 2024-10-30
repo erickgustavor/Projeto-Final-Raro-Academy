@@ -49,7 +49,10 @@ class RegisterView(View):
             from_email = settings.DEFAULT_FROM_EMAIL
             to_email = form.cleaned_data.get("email")
 
-            celery_send_mail.delay(subject, message, from_email, [to_email])
+            if settings.USING_REDIS:
+                celery_send_mail.delay(subject, message, from_email, [to_email])
+            else:
+                send_mail(subject, message, from_email, [to_email])
 
             return render(request, "registration/confirmation_sent.html")
 
@@ -86,7 +89,7 @@ class LoginView(View):
         return redirect("login")
 
 
-class LogoutView(View):
+class LogoutView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logout(request)
 
@@ -118,7 +121,7 @@ class RecoveryPasswordView(View):
     def post(self, request, *args, **kwargs):
         form = RecoveryPasswordRequestForm(data=request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get("email")
+            to_email = form.cleaned_data.get("email")
             account = Account.objects.get(email=email)
 
             token = RecoveryToken(account=account)
@@ -128,7 +131,10 @@ class RecoveryPasswordView(View):
             message = "O token para mudar de senha é:\n\n" f"{token.value}"
             from_email = settings.DEFAULT_FROM_EMAIL
 
-            celery_send_mail.delay(subject, message, from_email, [email])
+            if settings.USING_REDIS:
+                celery_send_mail.delay(subject, message, from_email, [to_email])
+            else:
+                send_mail(subject, message, from_email, [to_email])
             messages.info(request, "O token foi enviado pelo email.")
 
             return redirect("password-recovery")

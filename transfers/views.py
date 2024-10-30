@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views import View
@@ -93,20 +94,34 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
             to_account.balance += amount
             from_account.save()
             to_account.save()
+            if settings.USING_REDIS:
+                celery_send_mail.delay(
+                    "Transação Confirmada",
+                    f"Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [from_account.email],
+                )
 
-            celery_send_mail.delay(
-                "Transação Confirmada",
-                f"Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.",
-                settings.DEFAULT_FROM_EMAIL,
-                [from_account.email],
-            )
+                celery_send_mail.delay(
+                    "Você recebeu uma transação",
+                    f"Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [to_account.email],
+                )
+            else:
+                send_mail(
+                    "Transação Confirmada",
+                    f"Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [from_account.email],
+                )
 
-            celery_send_mail.delay(
-                "Você recebeu uma transação",
-                f"Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).",
-                settings.DEFAULT_FROM_EMAIL,
-                [to_account.email],
-            )
+                send_mail(
+                    "Você recebeu uma transação",
+                    f"Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [to_account.email],
+                )
 
             request.session["success_message"] = "Transação confirmada com sucesso!"
             return redirect("home")
