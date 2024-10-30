@@ -2,8 +2,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from .models import ProductInvestment, Investment
 from .forms import InvestmentForm
-# from django.contrib.auth.decorators import login_required
-# from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 

@@ -169,6 +169,14 @@ CELERY_BEAT_SCHEDULE = {
         "task": "investments.tasks.update_selic",
         "schedule": crontab(hour=8, minute=0),
     },
+    "update-cdi-indexer-every-morning": {
+        "task": "investments.tasks.update_cdi",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "update-tjlp-indexer-every-morning": {
+        "task": "investments.tasks.update_tjlp",
+        "schedule": crontab(hour=8, minute=0),
+    },
     "finalize-expired-investments-every-day": {
         "task": "investments.tasks.finalize_investments",
         "schedule": crontab(hour=0, minute=1),
