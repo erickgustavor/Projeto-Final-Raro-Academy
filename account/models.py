@@ -1,5 +1,5 @@
 from enum import Enum
-from uuid import uuid4
+from random import randint
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from .managers import AccountManager
@@ -32,7 +32,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
         verbose_name="tipo de conta",
     )
 
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["cpf", "username"]
 
@@ -43,7 +42,23 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 
 class RecoveryToken(models.Model):
-    value = models.CharField(default=uuid4, max_length=200)
+    value = models.CharField(max_length=9, unique=True)
     is_active = models.BooleanField(default=True)
     account = models.ForeignKey(Account, related_name="token", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def generate_numeric_token(cls):
+        return str(randint(100000000, 999999999))
+
+    def save(self, *args, **kwargs):
+        if not self.value:
+            self.value = self.generate_unique_numeric_token()
+        super().save(*args, **kwargs)
+
+    def generate_unique_numeric_token(self):
+        token = self.generate_numeric_token()
+        while RecoveryToken.objects.filter(value=token).exists():
+            token = self.generate_numeric_token()
+
+        return token
