@@ -23,9 +23,10 @@ class Indexer(models.Model):
 
 
 class ProductInvestment(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="nome")
     tax = models.DecimalField(
         max_digits=5, decimal_places=2,
+        verbose_name="taxa anual",
         help_text="Taxa anual do produto"
     )
     index_multiplier = models.DecimalField(
@@ -43,7 +44,15 @@ class ProductInvestment(models.Model):
         default=InvestmentRangeDateEnum.ONE_YEAR.value,
     )
     start_date = models.DateField(auto_now_add=True)
-    minimum_value = models.DecimalField(max_digits=10, decimal_places=2)
+    minimum_value = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name="valor mínimo"
+        )
+    is_premium = models.BooleanField(
+        default=False,
+        verbose_name="premium"
+        )
 
     def __str__(self):
         return f"{self.name}"
