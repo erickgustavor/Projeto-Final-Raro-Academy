@@ -1,6 +1,9 @@
 from django.contrib import admin
+from .models import ProductInvestment, Investment, Indexer
 
-from .models import ProductInvestment
+
+admin.site.register(Investment)
+admin.site.register(Indexer)
 
 
 @admin.register(ProductInvestment)
@@ -9,7 +12,6 @@ class ProductInvestmentAdmin(admin.ModelAdmin):
         "name",
         "tax",
         "start_date",
-        "end_date",
         "minimum_value",
         "is_premium",
     )
