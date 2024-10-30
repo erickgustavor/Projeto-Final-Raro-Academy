@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
@@ -81,10 +82,13 @@ class LoginView(View):
                     messages.error(
                         request, "Por favor, confirme seu e-mail antes de fazer login."
                     )
-                    return redirect("login")
 
                 login(request, account)
                 return redirect("home")
+            else:
+                messages.error(
+                        request, "Informações inválidas."
+                    )
 
         return redirect("login")
 
@@ -122,7 +126,7 @@ class RecoveryPasswordView(View):
         form = RecoveryPasswordRequestForm(data=request.POST)
         if form.is_valid():
             to_email = form.cleaned_data.get("email")
-            account = Account.objects.get(email=email)
+            account = Account.objects.get(email=to_email)
 
             token = RecoveryToken(account=account)
             token.save()
