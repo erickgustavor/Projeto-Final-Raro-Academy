@@ -1,12 +1,22 @@
 from django import forms
-from account.models import Account
+from django.core.exceptions import ValidationError
+from .models import Account, Transaction
+
 
 class TransactionForm(forms.Form):
-    to_account = forms.CharField(
-        label="Conta de Destino",
+    to_account = forms.ModelChoiceField(
+        label="Selecione o contato",
+        queryset=Account.objects.none(),
+        empty_label="Selecione o contato de destino",
+        to_field_name="cpf",
+        required=False,
+    )
+
+    to_account_cpf = forms.CharField(
+        label="Novo contato",
         max_length=11,
-        widget=forms.TextInput(attrs={'placeholder': 'Digite CPF da conta destino'}),
-        required=True
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Digite o CPF do novo contato'}),
     )
 
     amount = forms.DecimalField(
@@ -14,13 +24,33 @@ class TransactionForm(forms.Form):
         max_digits=10,
         decimal_places=2,
         required=True,
-        widget=forms.NumberInput(attrs={'placeholder': 'Insira o valor da transferência'})
+        widget=forms.NumberInput(
+            attrs={"placeholder": "Insira o valor da transferência"}
+        ),
     )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super(TransactionForm, self).__init__(*args, **kwargs)
+        if user:
+            to_accounts_cpf = Transaction.objects.filter(from_account=user).values_list(
+                "to_account", flat=True
+            )
+            to_accounts = Account.objects.filter(cpf__in=to_accounts_cpf)
+            self.fields["to_account"].queryset = to_accounts
 
     def clean(self):
         cleaned_data = super().clean()
-        if not Account.objects.filter(cpf = cleaned_data.get('to_account')).exists():
-            self.add_error('to_account', 'Conta de destino não encontrada')
+        to_account = cleaned_data.get("to_account")
+        to_account_cpf = cleaned_data.get("to_account_cpf")
+
+        if not to_account and not to_account_cpf:
+            raise ValidationError("Selecione um contato existente ou insira um novo CPF.")
+
+        if to_account_cpf:
+            if not Account.objects.filter(cpf=to_account_cpf).exists():
+                raise ValidationError("A conta com o CPF fornecido não foi encontrada.")
+
+            to_account = Account.objects.get(cpf=to_account_cpf)
+            cleaned_data['to_account'] = to_account
+
         return cleaned_data
-
-

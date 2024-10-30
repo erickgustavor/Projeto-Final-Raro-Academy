@@ -167,7 +167,7 @@ class RecoveryPasswordConfirmView(View):
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        form = TransactionForm()
+        form = TransactionForm(user=request.user)
 
         transactions = Transaction.objects.filter(
             from_account=request.user
