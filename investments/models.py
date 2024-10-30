@@ -11,7 +11,11 @@ class InvestmentRangeDateEnum(Enum):
 
 
 class Indexer(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+        )
     rate = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):

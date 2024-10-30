@@ -21,7 +21,7 @@ def update_income(self):
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def update_selic(self):
-    selic_indexer, _ = Indexer.objects.get_or_create(name="SELIC", rate=0)
+    selic_indexer, _ = Indexer.objects.get_or_create(name="SELIC")
     try:
         selic_rate = get_selic_rate()
         if not selic_rate:
