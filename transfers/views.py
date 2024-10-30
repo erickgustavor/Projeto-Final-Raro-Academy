@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,11 +6,9 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views import View
-
 from account.models import Account
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
-
 from .forms import TransactionForm
 from .models import Transaction
 

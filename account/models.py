@@ -32,7 +32,6 @@ class Account(AbstractBaseUser, PermissionsMixin):
         verbose_name="tipo de conta",
     )
 
-    contacts = models.ManyToManyField('Account', related_name='contact_accounts')
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["cpf", "username"]

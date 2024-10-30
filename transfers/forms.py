@@ -5,11 +5,18 @@ from .models import Account, Transaction
 
 class TransactionForm(forms.Form):
     to_account = forms.ModelChoiceField(
-        label="Conta de Destino",
+        label="Selecione o contato",
         queryset=Account.objects.none(),
-        required=True,
-        empty_label="Selecione a conta de destino",
+        empty_label="Selecione o contato de destino",
         to_field_name="cpf",
+        required=False,
+    )
+
+    to_account_cpf = forms.CharField(
+        label="Novo contato",
+        max_length=11,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Digite o CPF do novo contato'}),
     )
 
     amount = forms.DecimalField(
@@ -34,6 +41,16 @@ class TransactionForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         to_account = cleaned_data.get("to_account")
-        if not to_account:
-            raise ValidationError("Conta de destino não encontrada")
+        to_account_cpf = cleaned_data.get("to_account_cpf")
+
+        if not to_account and not to_account_cpf:
+            raise ValidationError("Selecione um contato existente ou insira um novo CPF.")
+
+        if to_account_cpf:
+            if not Account.objects.filter(cpf=to_account_cpf).exists():
+                raise ValidationError("A conta com o CPF fornecido não foi encontrada.")
+
+            to_account = Account.objects.get(cpf=to_account_cpf)
+            cleaned_data['to_account'] = to_account
+
         return cleaned_data
