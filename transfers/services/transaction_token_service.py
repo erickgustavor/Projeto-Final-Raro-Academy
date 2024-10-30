@@ -35,9 +35,7 @@ class TransactionTokenService:
             celery_send_mail.delay(
                 subject, message, "squadtech.capsbank@gmail.com", [recipient_email]
             )
-
         else:
-            print("teste")
             send_mail(
                 subject, message, "squadtech.capsbank@gmail.com", [recipient_email]
             )
