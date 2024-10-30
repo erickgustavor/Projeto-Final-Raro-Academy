@@ -13,6 +13,7 @@ services:
     volumes:
       - .:/work              
       - ./db.sqlite3:/work/db.sqlite3 
+    user: "${UID}:${GID}"
 
   redis:
     image: redis:latest
