@@ -3,7 +3,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
@@ -39,14 +40,18 @@ class RegisterView(View):
             account.save()
 
             subject = "Confirmação de Registro"
-            message = (
-                "Obrigado por se registrar! Por favor, ative sua conta clicando no link abaixo:\n\n"
-                f"http://{request.get_host()}/accounts/confirm/{account.id}/"
-            )
-            from_email = settings.DEFAULT_FROM_EMAIL
-            to_email = form.cleaned_data.get("email")
 
-            send_mail(subject, message, from_email, [to_email])
+            html_content = render_to_string("email/registration_confirmation.html", {
+                "username": username,
+                "confirmation_link": f"http://{request.get_host()}/accounts/confirm/{account.id}/"
+            })
+
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to_email = email
+
+            email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+            email.attach_alternative(html_content, "text/html")
+            email.send()
 
             return render(request, "registration/confirmation_sent.html")
 
@@ -122,10 +127,17 @@ class RecoveryPasswordView(View):
             token.save()
 
             subject = "Recuperação de Senha"
-            message = "O token para mudar de senha é:\n\n" f"{token.value}"
             from_email = settings.DEFAULT_FROM_EMAIL
 
-            send_mail(subject, message, from_email, [email])
+            html_content = render_to_string("email/recovery_password.html", {
+                "account": account,
+                "token": token.value,
+            })
+
+            email_message = EmailMultiAlternatives(subject, html_content, from_email, [email])
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
             messages.info(request, "O token foi enviado pelo email.")
 
             return redirect("password-recovery")
@@ -138,7 +150,6 @@ class RecoveryPasswordView(View):
                 "confirm_form": RecoveryPasswordConfirmForm(),
             },
         )
-
 
 class RecoveryPasswordConfirmView(View):
     def post(self, request, *args, **kwargs):
