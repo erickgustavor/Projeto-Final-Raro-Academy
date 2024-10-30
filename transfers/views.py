@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views import View
@@ -11,6 +11,7 @@ from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
 from .forms import TransactionForm
 from .models import Transaction
+from django.template.loader import render_to_string
 
 
 class TransactionView(LoginRequiredMixin, View):
@@ -48,7 +49,6 @@ class TransactionView(LoginRequiredMixin, View):
 
         for error in form.non_field_errors():
             messages.error(request, error)
-            print(error)
 
         return redirect("home")
 
@@ -93,23 +93,34 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
             from_account.save()
             to_account.save()
 
-            send_mail(
-                "Transação Confirmada",
-                f"Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.",
-                settings.DEFAULT_FROM_EMAIL,
-                [from_account.email],
-                fail_silently=False,
-            )
+            subject = "Transação Confirmada"
+            html_content = render_to_string("email/transaction_confirmed.html", {
+                "from_account": from_account,
+                "to_account": to_account,
+                "amount": amount
+            })
+            email_from = settings.DEFAULT_FROM_EMAIL
+            email_to = [from_account.email]
 
-            send_mail(
-                "Você recebeu uma transação",
-                f"Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).",
-                settings.DEFAULT_FROM_EMAIL,
-                [to_account.email],
-                fail_silently=False,
-            )
+            email = EmailMultiAlternatives(subject, html_content, email_from, email_to)
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
+            
+            subject = "Você recebeu uma transação"
+            html_content = render_to_string("email/transaction_received.html", {
+                "from_account": from_account,
+                "to_account": to_account,
+                "amount": amount
+            })
+            email_to = [to_account.email]
+
+            email = EmailMultiAlternatives(subject, html_content, email_from, email_to)
+            email.attach_alternative(html_content, "text/html")
+            email.send()
 
             request.session["success_message"] = "Transação confirmada com sucesso!"
+            
             return redirect("home")
         else:
             return render(
