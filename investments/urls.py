@@ -1,7 +1,20 @@
 from django.urls import path
-from .views import ProductListView, RateListView
+from .views import (InvestmentCreateView,
+                    MyInvestmentsListView,
+                    ProductDetailView,
+                    ProductListView)
 
 urlpatterns = [
     path("products/", ProductListView.as_view(), name="product_list"),
-    path("rates/", RateListView.as_view(), name="rate_list"),
+    path(
+        "products/<int:product_id>/",
+        ProductDetailView.as_view(), name="product_detail"
+    ),
+    path(
+        "Investment/<int:product_id>/",
+        InvestmentCreateView.as_view(),
+        name="investment_create",
+    ),
+    path("meus-investimentos/",
+         MyInvestmentsListView.as_view(), name="my_investments"),
 ]
