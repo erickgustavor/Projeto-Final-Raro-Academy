@@ -1,12 +1,14 @@
 from django import forms
-from account.models import Account
+from django.core.exceptions import ValidationError
+from .models import Account, Transaction 
 
 class TransactionForm(forms.Form):
-    to_account = forms.CharField(
+    to_account = forms.ModelChoiceField(
         label="Conta de Destino",
-        max_length=11,
-        widget=forms.TextInput(attrs={'placeholder': 'Digite CPF da conta destino'}),
-        required=True
+        queryset=Account.objects.none(),
+        required=True,
+        empty_label="Selecione a conta de destino",
+        to_field_name="cpf" 
     )
 
     amount = forms.DecimalField(
@@ -17,10 +19,16 @@ class TransactionForm(forms.Form):
         widget=forms.NumberInput(attrs={'placeholder': 'Insira o valor da transferência'})
     )
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+          
+            transacoes = Transaction.objects.filter(from_account=user.account).values_list('to_account', flat=True)
+            self.fields['to_account'].queryset = Account.objects.filter(id__in=transacoes)
+
     def clean(self):
         cleaned_data = super().clean()
-        if not Account.objects.filter(cpf = cleaned_data.get('to_account')).exists():
-            self.add_error('to_account', 'Conta de destino não encontrada')
+        to_account = cleaned_data.get('to_account')
+        if not to_account:
+            raise ValidationError('Conta de destino não encontrada')
         return cleaned_data
-
-

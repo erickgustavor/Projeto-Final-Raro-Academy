@@ -9,6 +9,7 @@ from transfers.models import Transaction
 from .forms import TransactionForm
 from transfers.services.transaction_token_service import TransactionTokenService
 from decimal import Decimal
+from django.contrib import messages
 
 
 class TransactionView(View):
@@ -49,9 +50,13 @@ class TransactionView(View):
 
                 return redirect('confirm_transaction')  
             else:
-                form.add_error('amount', 'Saldo insuficiente para realizar a transação.')
+                form.add_error(None, 'Saldo insuficiente para realizar a transação.')
 
-        return render(request, 'home.html', {'form': form})
+        for error in form.non_field_errors():
+            messages.error(request, error)
+            print(error)
+
+        return redirect('home')
     
 
 class ConfirmTransactionView(View):
