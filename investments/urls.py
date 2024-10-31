@@ -15,6 +15,11 @@ urlpatterns = [
         InvestmentCreateView.as_view(),
         name="investment_create",
     ),
-    path("meus-investimentos/",
+    path("my-investments/",
          MyInvestmentsListView.as_view(), name="my_investments"),
+    path(
+        "my-investments/<int:investment_id>/",
+        MyInvestmentsListView.as_view(),
+        name="myinvestment_detail",
+    ),
 ]

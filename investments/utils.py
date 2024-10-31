@@ -26,3 +26,4 @@ def get_tjlp_rate():
     if not tjlp_data.empty:
         return tjlp_data.iloc[-1]["tjlp"]
     return None
+

@@ -1,16 +1,17 @@
+from datetime import time
 from decimal import Decimal
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views import View
-from datetime import time
 
 from account.models import Account
-from caps_bank.tasks import celery_send_mail
+from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
 
@@ -103,36 +104,59 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
 
             transaction.save()
 
+            subject_sender = "Transação Confirmada"
+            html_content_sender = render_to_string(
+                "email/transaction_confirmed.html",
+                {
+                    "from_account": from_account,
+                    "to_account": to_account,
+                    "amount": amount,
+                },
+            )
+            email_to_sender = from_account.email
+
+            subject_receiver = "Você recebeu uma transação"
+            html_content_receiver = render_to_string(
+                "email/transaction_received.html",
+                {
+                    "from_account": from_account,
+                    "to_account": to_account,
+                    "amount": amount,
+                },
+            )
+            email_to_receiver = to_account.email
+
             if settings.USING_REDIS:
                 celery_send_mail.delay(
-                    "Transação Confirmada",
-                    f"Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.",
+                    subject_sender,
+                    html_content_sender,
                     settings.DEFAULT_FROM_EMAIL,
-                    [from_account.email],
+                    email_to_sender,
                 )
 
                 celery_send_mail.delay(
-                    "Você recebeu uma transação",
-                    f"Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).",
+                    subject_receiver,
+                    html_content_receiver,
                     settings.DEFAULT_FROM_EMAIL,
-                    [to_account.email],
+                    email_to_receiver,
                 )
             else:
-                send_mail(
-                    "Transação Confirmada",
-                    f"Sua transação de R$ {amount:.2f} para {to_account.username} (CPF {to_account.cpf}) foi realizada com sucesso.",
+                sinc_celery_send_mail(
+                    subject_sender,
+                    html_content_sender,
                     settings.DEFAULT_FROM_EMAIL,
-                    [from_account.email],
+                    email_to_sender,
                 )
 
-                send_mail(
-                    "Você recebeu uma transação",
-                    f"Você recebeu R$ {amount:.2f} de {from_account.username} (CPF {from_account.cpf}).",
+                sinc_celery_send_mail(
+                    subject_receiver,
+                    html_content_receiver,
                     settings.DEFAULT_FROM_EMAIL,
-                    [to_account.email],
+                    email_to_receiver,
                 )
 
             request.session["success_message"] = "Transação confirmada com sucesso!"
+
             return redirect("home")
         else:
             return render(

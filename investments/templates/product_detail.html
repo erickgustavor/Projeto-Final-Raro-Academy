@@ -6,7 +6,7 @@
   <p>Taxa Diaria total: {{ product.get_daily_tax }}%</p>
   <p>Valor Mínimo: {{ product.minimum_value }}</p>
   <p>Data de Início: {{ product.start_date }}</p>
-  <p>Validade: {{ product.range_date }} dias.</p>
+  <p>Validade: {{ product.final_date }}</p>
 
   <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
 {% endblock %}

@@ -33,10 +33,10 @@
         $ {{ balance }}</h1>
     </h1>
 
-    <h1>Histórico de Transferências</h1>
+    <h1>Histórico de Transferências Realizadas</h1>
     <div id="transaction-history">
         {% for transaction in transactions %}
-            <p>{{ transaction }}</p>
+                <p>{{ transaction }}</p>
         {% empty %}
             <p>Nenhuma transferência realizada ainda.</p>
         {% endfor %}
