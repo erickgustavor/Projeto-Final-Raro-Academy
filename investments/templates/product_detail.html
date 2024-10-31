@@ -1,4 +1,3 @@
-
 {% extends "base_generic.html" %}
 
 {% block content %}
@@ -10,5 +9,11 @@
   <p>Data de Início: {{ product.start_date }}</p>
   <p>Validade: {{ product.final_date }}</p>
 
-  <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+  {% if product.is_premium and user.is_premium %}
+    <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+  {% elif not product.is_premium %}
+    <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+  {% else %}
+    <p>Este produto é premium e só pode ser contratado por usuários premium.</p>
+  {% endif %}
 {% endblock %}

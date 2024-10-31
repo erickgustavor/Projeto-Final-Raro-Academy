@@ -1,16 +1,40 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from .models import ProductInvestment, Investment
+
+from account.models import AccountType
+from .models import Indexer, ProductInvestment, Investment
 from .forms import InvestmentForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.utils.dateparse import parse_date
 
 
 class ProductListView(View):
     def get(self, request, *args, **kwargs):
         products = ProductInvestment.objects.all()
+        indexers = Indexer.objects.all()
+        indexer = request.GET.get("indexer")
+        if indexer:
+            products = products.filter(indexer=indexer)
+        minimum_value = request.GET.get("minimum_value")
+        if minimum_value:
+            products = products.filter(minimum_value__gte=float(minimum_value))
+        final_date = request.GET.get("final_date")
+        if final_date:
+            products = products.filter(
+                final_date__lte=parse_date(
+                    final_date
+                    ))
+        is_premium = request.GET.get("is_premium")
+        if is_premium == "True":
+            products = products.filter(is_premium=True)
+        elif is_premium == "False":
+            products = products.filter(is_premium=False)
+
         context = {
             "products": products,
+            "user": request.user,
+            "indexers": indexers,
         }
         return render(request, "product_list.html", context)
 
@@ -41,6 +65,17 @@ class InvestmentCreateView(LoginRequiredMixin, View):
             "form": form,
             "product": product,
         }
+
+        if product.is_premium and request.user.type not in [
+            AccountType.ADMIN,
+            AccountType.PREMIUM,
+        ]:
+            messages.error(
+                request,
+                "Você precisa ser um usuário\
+                      premium para investir em produtos premium.",
+            )
+            return render(request, "investment_form.html", context)
 
         if not form.is_valid():
             messages.error(
