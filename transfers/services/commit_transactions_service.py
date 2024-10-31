@@ -7,7 +7,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
+from caps_bank.tasks import celery_send_mail, celery_send_mail
 from transfers.models import Transaction
 
 
@@ -56,14 +56,14 @@ class CommitTrasactionService:
                 email_to_receiver,
             )
         else:
-            sinc_celery_send_mail(
+            celery_send_mail(
                 subject_sender,
                 html_content_sender,
                 settings.DEFAULT_FROM_EMAIL,
                 email_to_sender,
             )
 
-            sinc_celery_send_mail(
+            celery_send_mail(
                 subject_receiver,
                 html_content_receiver,
                 settings.DEFAULT_FROM_EMAIL,
@@ -86,7 +86,7 @@ class CommitTrasactionService:
         if settings.USING_REDIS:
             celery_send_mail.delay(subject, html_content, email_from, email_to)
         else:
-            sinc_celery_send_mail(subject, html_content, email_from, email_to)
+            celery_send_mail(subject, html_content, email_from, email_to)
 
     def make_transaction(self):
         if self.from_account.balance < self.amount:

@@ -7,8 +7,3 @@ def celery_send_mail(self,subject, html_content, from_email, to_email):
     email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
     email.attach_alternative(html_content, "text/html")
     email.send()
-
-def sinc_celery_send_mail(subject, html_content, from_email, to_email):
-    email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
-    email.attach_alternative(html_content, "text/html")
-    email.send()

@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.views import View
 from datetime import datetime
 from account.models import Account
-from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
+from caps_bank.tasks import celery_send_mail, celery_send_mail
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
 from .services.commit_transactions_service import CommitTrasactionService
@@ -92,7 +92,7 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
             )
 
             commit_service = CommitTrasactionService(transaction)
-            
+
             now = timezone.now()
 
             if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):

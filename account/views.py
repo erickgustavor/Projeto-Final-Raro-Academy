@@ -15,7 +15,7 @@ from account.forms import (
     RecoveryPasswordConfirmForm,
     RecoveryPasswordRequestForm,
 )
-from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
+from caps_bank.tasks import celery_send_mail, celery_send_mail
 from transfers.forms import TransactionForm
 from transfers.models import Transaction
 from .models import Account, RecoveryToken
@@ -55,7 +55,7 @@ class RegisterView(View):
             if settings.USING_REDIS:
                 celery_send_mail.delay(subject, html_content, from_email, to_email)
             else:
-                sinc_celery_send_mail(subject, html_content, from_email, to_email)
+                celery_send_mail(subject, html_content, from_email, to_email)
 
             return render(request, "registration/confirmation_sent.html")
 
@@ -144,7 +144,7 @@ class RecoveryPasswordView(View):
             if settings.USING_REDIS:
                 celery_send_mail.delay(subject, html_content, from_email, to_email)
             else:
-                sinc_celery_send_mail(subject, html_content, from_email, to_email)
+                celery_send_mail(subject, html_content, from_email, to_email)
             messages.info(request, "O token foi enviado pelo email.")
 
             return redirect("password-recovery")
