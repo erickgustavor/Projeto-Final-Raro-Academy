@@ -105,20 +105,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.\
-            auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.\
-            auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.\
-            auth.password_validation.CommonPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.\
-            auth.password_validation.NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -183,5 +179,9 @@ CELERY_BEAT_SCHEDULE = {
     "finalize-expired-investments-every-day": {
         "task": "investments.tasks.finalize_investments",
         "schedule": crontab(hour=0, minute=1),
+    },
+    "process_uncommitted_transactions_every_weekday_at_8am": {
+        "task": "transfers.tasks.commit_transactions",
+        "schedule": crontab(hour=8, minute=0, day_of_week="1-5"),
     },
 }

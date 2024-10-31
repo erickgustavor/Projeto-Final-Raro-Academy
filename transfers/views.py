@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views import View
+from datetime import time
 
 from account.models import Account
 from caps_bank.tasks import celery_send_mail
@@ -88,12 +89,20 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
                 amount=amount,
                 token=token,
             )
+
+            now = timezone.now()
+
+            if 0 <= now.weekday() <= 4 and time(8, 0) <= now <= time(18, 0):
+                from_account.balance -= amount
+                to_account.balance += amount
+                transaction.is_committed = True
+                from_account.save()
+                to_account.save()
+            else:
+                transaction.is_committed = False
+
             transaction.save()
 
-            from_account.balance -= amount
-            to_account.balance += amount
-            from_account.save()
-            to_account.save()
             if settings.USING_REDIS:
                 celery_send_mail.delay(
                     "Transação Confirmada",

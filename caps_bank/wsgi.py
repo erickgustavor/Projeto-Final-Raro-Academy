@@ -12,12 +12,12 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 from investments.tasks import update_selic, update_tjlp, update_cdi
-
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'caps_bank.settings')
-
-update_selic.delay()
-update_tjlp.delay()
-update_cdi.delay()
+if settings.USING_REDIS:
+    update_selic.delay()
+    update_tjlp.delay()
+    update_cdi.delay()
 
 application = get_wsgi_application()
