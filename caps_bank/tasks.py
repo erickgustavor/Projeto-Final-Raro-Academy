@@ -1,7 +1,14 @@
 from celery import shared_task
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)  
-def celery_send_mail(subject, message, from_email, to_email):
-    send_mail(subject, message, from_email, to_email)
+def celery_send_mail(subject, html_content, from_email, to_email):
+    email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send()
+
+def sinc_celery_send_mail(subject, html_content, from_email, to_email):
+    email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
+    email.attach_alternative(html_content, "text/html")
+    email.send()
