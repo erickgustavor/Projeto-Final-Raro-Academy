@@ -14,13 +14,13 @@ class ProductInvestmentAdmin(admin.ModelAdmin):
         "indexer",
         "index_multiplier",
         "start_date",
-        "range_date",
+        "final_date",
         "minimum_value",
         "is_premium",
     )
     search_fields = ("name", "minimum_value")
     fieldsets = (
-        ("Informações do Produto", {"fields": ["name", "range_date"]}),
+        ("Informações do Produto", {"fields": ["name", "final_date"]}),
         ("Rendimentos do Produto",
             {"fields": ["tax", "indexer", "index_multiplier"]}),
         (None, {"fields": ["minimum_value", "is_premium"]}),

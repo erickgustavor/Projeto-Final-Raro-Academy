@@ -85,3 +85,21 @@ class MyInvestmentsListView(LoginRequiredMixin, View):
             "investments": investments,
         }
         return render(request, "my_investments.html", context)
+
+    def post(self, request, *args, **kwargs):
+        investment_id = kwargs.get("investment_id")
+        investment = get_object_or_404(
+            Investment, id=investment_id, account=request.user
+        )
+
+        try:
+            total_amount = investment.rescue_investment()
+            messages.success(
+                request,
+                f"""Investimento resgatado com sucesso! Total: {
+                    total_amount:.2f}""",
+            )
+        except ValueError as e:
+            messages.error(request, str(e))
+
+        return redirect("my_investments")
