@@ -1,14 +1,15 @@
-from enum import Enum
+# from enum import Enum
 from django.db import models
 from django.utils import timezone
 from account.models import Account
 from decimal import Decimal
+from dateutil.relativedelta import relativedelta
 
 
-class InvestmentRangeDateEnum(Enum):
-    ONE_YEAR = 365
-    ONE_MONTH = 30
-    ONE_WEEK = 7
+# class InvestmentRangeDateEnum(Enum):
+#     ONE_YEAR = 365
+#     ONE_MONTH = 30
+#     ONE_WEEK = 7
 
 
 class Indexer(models.Model):
@@ -41,15 +42,17 @@ class ProductInvestment(models.Model):
         help_text="Multiplicador do indexador",
     )
     indexer = models.ForeignKey(Indexer, on_delete=models.CASCADE)
-    range_date = models.IntegerField(
-        choices=[
-            (InvestmentRangeDateEnum.ONE_YEAR.value, "1 ano"),
-            (InvestmentRangeDateEnum.ONE_MONTH.value, "1 mês"),
-            (InvestmentRangeDateEnum.ONE_WEEK.value, "1 semana"),
-        ],
-        default=InvestmentRangeDateEnum.ONE_YEAR.value,
-    )
+    # range_date = models.IntegerField(
+    #     choices=[
+    #         (InvestmentRangeDateEnum.ONE_YEAR.value, "1 ano"),
+    #         (InvestmentRangeDateEnum.ONE_MONTH.value, "1 mês"),
+    #         (InvestmentRangeDateEnum.ONE_WEEK.value, "1 semana"),
+    #     ],
+    #     default=InvestmentRangeDateEnum.ONE_YEAR.value,
+    # )
     start_date = models.DateField(auto_now_add=True)
+    final_date = models.DateField(
+        default=timezone.now() + relativedelta(months=3))
     minimum_value = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -78,7 +81,7 @@ class Investment(models.Model):
     accumulated_income = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
     initial_date = models.DateField(auto_now_add=True)
-    due_date = models.DateField()
+    # due_date = models.DateField(null=True, blank=True)
     rescue_data = models.DateField(null=True, blank=True)
     status = models.CharField(
         max_length=10,
@@ -100,10 +103,22 @@ class Investment(models.Model):
         ) * self.product.get_daily_tax()
         print(self.accumulated_income)
 
+    def rescue_investment(self):
+        if self.status == "ativo":
+            total_amount = self.applied_value + self.accumulated_income
+            self.account.balance += (
+                total_amount
+            )
+            self.account.save()
+            self.rescue_data = timezone.now()
+            self.status = "resgatado"
+            self.save()
+            return total_amount
+        else:
+            raise ValueError("Este investimento não pode ser resgatado.")
+
     def save(self, *args, **kwargs):
-        if self.pk is None:
-            self.due_date = (
-                timezone.now().date() + timezone.timedelta(
-                    days=self.product.range_date
-                ))
+        # Se não houver 'rescue_data', usa 'product.final_date' se disponível
+        if not self.rescue_data and self.product.final_date:
+            self.rescue_data = self.product.final_date
         super().save(*args, **kwargs)
