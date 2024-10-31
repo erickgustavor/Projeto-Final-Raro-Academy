@@ -188,7 +188,7 @@ class HomeView(LoginRequiredMixin, View):
         form = TransactionForm(user=request.user)
 
         transactions = Transaction.objects.filter(
-            from_account=request.user
+            from_account=request.user, is_committed=True
         )
 
         return render(

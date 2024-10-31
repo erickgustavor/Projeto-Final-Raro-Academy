@@ -1,22 +1,11 @@
 from celery import shared_task
 from caps_bank.tasks import celery_send_mail
 from .models import Transaction
-
+from .services.commit_transactions_service import CommitTrasactionService
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
-def commit_transactions():
+def commit_transactions(self):
     transactions_uncommitted = Transaction.objects.filter(is_committed=False)
     for transaction in transactions_uncommitted:
-        to_account = transaction.to_account
-        from_account = transaction.from_account
-        amount = transaction.amount
-        if from_account.balance < amount:
-            subject = "Transação recusada"
-        from_account.balance -= amount
-        to_account.balance += amount
-
-        transaction.is_committed = True
-
-        to_account.save()
-        from_account.save()
-        transaction.save()
+        commit_service = CommitTrasactionService(transaction)
+        commit_service.make_transaction()
