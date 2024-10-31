@@ -4,7 +4,7 @@ from transfers.models import Transaction
 from django.template.loader import render_to_string
 from django.conf import settings
 import random, string, os
-from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
+from caps_bank.tasks import celery_send_mail, celery_send_mail
 
 
 class TransactionTokenService:
@@ -36,7 +36,7 @@ class TransactionTokenService:
                 subject, html_content, email_from, email_to
             )
         else:
-            sinc_celery_send_mail(
+            celery_send_mail(
                 subject, html_content, email_from, email_to
             )
 

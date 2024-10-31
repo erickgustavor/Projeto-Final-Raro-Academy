@@ -180,4 +180,8 @@ CELERY_BEAT_SCHEDULE = {
         "task": "investments.tasks.finalize_investments",
         "schedule": crontab(hour=0, minute=1),
     },
+    "process_uncommitted_transactions_every_weekday_at_8am": {
+        "task": "transfers.tasks.commit_transactions",
+        "schedule": crontab(hour=8, minute=0, day_of_week="1-5"),
+    },
 }

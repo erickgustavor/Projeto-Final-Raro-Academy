@@ -28,7 +28,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     type = models.CharField(
         max_length=10,
         choices=AccountType.choices(),
-        default=AccountType.FREE,
+        default=AccountType.FREE.value,
         verbose_name="tipo de conta",
     )
 
