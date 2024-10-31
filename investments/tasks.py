@@ -65,18 +65,12 @@ def update_tjlp(self):
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def finalize_investments(self):
     expired_investments = Investment.objects.filter(
-        due_date__lt=date.today(),
+        rescue_date__lt=date.today(),
         status="ativo"
         )
     try:
         for investment in expired_investments:
-            investment.status = "vencido"
-            investment.rescue_data = date.today()
-            investment.account.balance += (
-                investment.accumulated_income + investment.applied_value
-                )
-            investment.account.save()
-            investment.save()
+            investment.rescue_investment("vencido")
             print(
                 f"""Investimento de {
                     investment.account
