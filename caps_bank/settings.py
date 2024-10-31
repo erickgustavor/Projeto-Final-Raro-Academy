@@ -10,10 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os
 from pathlib import Path
-
-from celery.schedules import crontab, timedelta
+from celery.schedules import crontab
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +31,10 @@ DEBUG = os.getenv("DEBUG") == "True"
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = (
+    os.getenv("CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP") == "True"
+)
+USING_REDIS = os.getenv("USING_REDIS") == "True"
 
 ALLOWED_HOSTS = []
 
@@ -156,3 +158,26 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+
+CELERY_BEAT_SCHEDULE = {
+    "update-income-every-morning": {
+        "task": "investments.tasks.update_income",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "update-selic-indexer-every-morning": {
+        "task": "investments.tasks.update_selic",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "update-cdi-indexer-every-morning": {
+        "task": "investments.tasks.update_cdi",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "update-tjlp-indexer-every-morning": {
+        "task": "investments.tasks.update_tjlp",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "finalize-expired-investments-every-day": {
+        "task": "investments.tasks.finalize_investments",
+        "schedule": crontab(hour=0, minute=1),
+    },
+}

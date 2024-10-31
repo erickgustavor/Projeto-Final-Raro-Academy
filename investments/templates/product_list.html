@@ -1,42 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
-    
-</head>
-<body>
-    <div class="container">
-        <h1>Product Investments</h1>
-        
-        {% if products %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Annual Tax (%)</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Minimum Value ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                        <tr>
-                            <td class="product-name">{{ product.name }}</td>
-                            <td>{{ product.tax }}%</td>
-                            <td>{{ product.start_date }}</td>
-                            <td>{{ product.end_date }}</td>
-                            <td>${{ product.minimum_value }}</td>
-                        </tr>
-                        
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No products available at the moment.</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h2>Produtos de Investimento</h2>
+  <ul>
+    {% for product in products %}
+      <br/><li>
+      <strong>{{ product.name }}</strong><br/> - Premium: {{ product.is_premium }}<br/>
+        - <a href="{% url 'product_detail' product.id %}">Ver Detalhes</a><br/>
+         
+      </li>
+    {% endfor %}
+    <br/><strong> Usuario: {{ user.username }}</strong><br/>
+    <strong> Saldo: {{ user.balance }}</strong>
+  </ul>
+{% endblock %}

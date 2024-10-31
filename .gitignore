@@ -4,7 +4,7 @@
 ### Pyenv ###
 .python-version
 icons/*
-
+static/*
 ### Django ###
 *.log
 *.pot
@@ -167,6 +167,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Celery beat
+celerybeat-schedule.*
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

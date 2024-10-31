@@ -4,6 +4,7 @@ from transfers.models import Transaction
 from django.template.loader import render_to_string
 from django.conf import settings
 import random, string, os
+from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
 
 
 class TransactionTokenService:
@@ -28,11 +29,16 @@ class TransactionTokenService:
         })
 
         email_from = settings.DEFAULT_FROM_EMAIL
-        email_to = [self.transaction_data['from_account'].email]
+        email_to = self.transaction_data['from_account'].email
 
-        email = EmailMultiAlternatives(subject, html_content, email_from, email_to)
-        email.attach_alternative(html_content, "text/html")
-        email.send()
+        if settings.USING_REDIS:
+            celery_send_mail.delay(
+                subject, html_content, email_from, email_to
+            )
+        else:
+            sinc_celery_send_mail(
+                subject, html_content, email_from, email_to
+            )
 
     def confirm_transaction(self, token_input):
         if self.token_expiration <= timezone.now():
@@ -40,10 +46,10 @@ class TransactionTokenService:
 
         if self.token == token_input:
             transaction = Transaction(
-                from_account=self.transaction_data['from_account'],
-                to_account=self.transaction_data['to_account'],
-                amount=self.transaction_data['amount'],
-                token=self.token
+                from_account=self.transaction_data["from_account"],
+                to_account=self.transaction_data["to_account"],
+                amount=self.transaction_data["amount"],
+                token=self.token,
             )
             transaction.save()
             return "Transação confirmada com sucesso!"

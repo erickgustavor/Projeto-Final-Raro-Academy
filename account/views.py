@@ -8,15 +8,17 @@ from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
-from .models import Account, RecoveryToken
-from transfers.models import Transaction
-from transfers.forms import TransactionForm
+
 from account.forms import (
     AccountRegistrationForm,
     LoginForm,
     RecoveryPasswordConfirmForm,
     RecoveryPasswordRequestForm,
 )
+from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
+from transfers.forms import TransactionForm
+from transfers.models import Transaction
+from .models import Account, RecoveryToken
 
 
 class RegisterView(View):
@@ -49,9 +51,11 @@ class RegisterView(View):
             from_email = settings.DEFAULT_FROM_EMAIL
             to_email = email
 
-            email = EmailMultiAlternatives(subject, html_content, from_email, [to_email])
-            email.attach_alternative(html_content, "text/html")
-            email.send()
+
+            if settings.USING_REDIS:
+                celery_send_mail.delay(subject, html_content, from_email, to_email)
+            else:
+                sinc_celery_send_mail(subject, html_content, from_email, to_email)
 
             return render(request, "registration/confirmation_sent.html")
 
@@ -80,15 +84,18 @@ class LoginView(View):
                     messages.error(
                         request, "Por favor, confirme seu e-mail antes de fazer login."
                     )
-                    return redirect("login")
 
                 login(request, account)
                 return redirect("home")
+            else:
+                messages.error(
+                        request, "Informações inválidas."
+                    )
 
         return redirect("login")
 
 
-class LogoutView(View):
+class LogoutView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logout(request)
 
@@ -120,8 +127,8 @@ class RecoveryPasswordView(View):
     def post(self, request, *args, **kwargs):
         form = RecoveryPasswordRequestForm(data=request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get("email")
-            account = Account.objects.get(email=email)
+            to_email = form.cleaned_data.get("email")
+            account = Account.objects.get(email=to_email)
 
             token = RecoveryToken(account=account)
             token.save()
@@ -134,10 +141,10 @@ class RecoveryPasswordView(View):
                 "token": token.value,
             })
 
-            email_message = EmailMultiAlternatives(subject, html_content, from_email, [email])
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send()
-
+            if settings.USING_REDIS:
+                celery_send_mail.delay(subject, html_content, from_email, to_email)
+            else:
+                sinc_celery_send_mail(subject, html_content, from_email, to_email)
             messages.info(request, "O token foi enviado pelo email.")
 
             return redirect("password-recovery")
@@ -182,9 +189,14 @@ class HomeView(LoginRequiredMixin, View):
 
         transactions = Transaction.objects.filter(
             from_account=request.user
-        ) | Transaction.objects.filter(
-            to_account=request.user
         )
 
-
-        return render(request, "home.html", {"form": form, "transactions": transactions, "balance": request.user.balance})
+        return render(
+            request,
+            "home.html",
+            {
+                "form": form,
+                "transactions": transactions,
+                "balance": request.user.balance,
+            },
+        )

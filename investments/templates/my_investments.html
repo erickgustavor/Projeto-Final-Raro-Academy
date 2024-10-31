@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h2>Meus Investimentos</h2>
+  <ul>
+    {% for investment in investments %}
+    <br> <li>
+        <strong>{{ investment.product.name }}</strong><br>
+        Valor Aplicado: {{ investment.applied_value }}<br>
+        Taxa Diaria total: {{ product.get_daily_tax }}%<br>
+        Rendimento Acumulado: {{ investment.accumulated_income }}<br>
+        Status: {{ investment.status }}<br>
+        Iniciao do Investimento: {{ investment.initial_date }}<br>
+        Fim do Investimento: {{ investment.due_date }}
+      </li>
+    {% empty %}
+      <p>Você ainda não possui investimentos.</p>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -10,7 +10,10 @@ services:
       - redis
     networks:
       - private_network  
-
+    volumes:
+      - .:/work              
+      - ./db.sqlite3:/work/db.sqlite3 
+    user: "${UID}:${GID}"
 
   redis:
     image: redis:latest
