@@ -1,17 +1,43 @@
-
 {% extends "base_generic.html" %}
 
 {% block content %}
   <h2>Produtos de Investimento</h2>
+  <h4>Todos nossos investimentos oferecem juros composto em seus rendimentos e liquidez diária</h4>
+  
+  <form method="GET" action=".">
+    <label for="indexer">Indexador:</label>
+    <select name="indexer">
+      <option value="" {% if request.GET.indexer == "" %}selected{% endif %}>Todos</option>
+      {% for indexer in indexers %}
+        <option value="{{ indexer.id }}" {% if request.GET.indexer == indexer %}selected{% endif %}>{{ indexer }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="minimum_value">Valor Mínimo:</label>
+    <input type="number" name="minimum_value" value="{{ request.GET.minimum_value }}">
+
+    <label for="final_date">Data de Vencimento:</label>
+    <input type="date" name="final_date" value="{{ request.GET.final_date }}">
+
+    <label for="is_premium">Premium:</label>
+    <select name="is_premium">
+      <option value="" {% if request.GET.is_premium == "" %}selected{% endif %}>Todos</option>
+      <option value="True" {% if request.GET.is_premium == "True" %}selected{% endif %}>Sim</option>
+      <option value="False" {% if request.GET.is_premium == "False" %}selected{% endif %}>Não</option>
+    </select>
+
+    <button type="submit">Filtrar</button>
+  </form>
+
   <ul>
     {% for product in products %}
-      <br/><li>
-      <strong>{{ product.name }}</strong><br/> - Premium: {{ product.is_premium }}<br/>
+      <li>
+        <strong>{{ product.name }}</strong><br/> - Premium: {{ product.is_premium }}<br/>
         - <a href="{% url 'product_detail' product.id %}">Ver Detalhes</a><br/>
-         
       </li>
     {% endfor %}
-    <br/><strong> Usuario: {{ user.username }}</strong><br/>
-    <strong> Saldo: {{ user.balance }}</strong>
   </ul>
+
+  <strong> Usuário: {{ user.username }}</strong><br/>
+  <strong> Saldo: {{ user.balance }}</strong>
 {% endblock %}
