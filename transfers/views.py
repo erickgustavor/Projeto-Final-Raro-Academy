@@ -1,18 +1,22 @@
+from datetime import time
 from decimal import Decimal
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views import View
+from datetime import datetime
 from account.models import Account
-from caps_bank.tasks import celery_send_mail, sinc_celery_send_mail
+from caps_bank.tasks import celery_send_mail, celery_send_mail
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
+from .services.commit_transactions_service import CommitTrasactionService
 from .forms import TransactionForm
 from .models import Transaction
-from django.template.loader import render_to_string
 
 
 class TransactionView(LoginRequiredMixin, View):
@@ -86,60 +90,20 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
                 amount=amount,
                 token=token,
             )
+
+            commit_service = CommitTrasactionService(transaction)
+
+            now = timezone.now()
+
+            if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):
+                commit_service.make_transaction()
+            else:
+                transaction.is_committed = False
+
             transaction.save()
 
-            from_account.balance -= amount
-            to_account.balance += amount
-            from_account.save()
-            to_account.save()
-
-            subject_sender = "Transação Confirmada"
-            html_content_sender = render_to_string("email/transaction_confirmed.html", {
-                "from_account": from_account,
-                "to_account": to_account,
-                "amount": amount
-            })
-            email_to_sender = from_account.email
-            
-            subject_receiver = "Você recebeu uma transação"
-            html_content_receiver = render_to_string("email/transaction_received.html", {
-                "from_account": from_account,
-                "to_account": to_account,
-                "amount": amount
-            })
-            email_to_receiver = to_account.email
-
-            if settings.USING_REDIS:
-                celery_send_mail.delay(
-                    subject_sender,
-                    html_content_sender,
-                    settings.DEFAULT_FROM_EMAIL,
-                    email_to_sender,
-                )
-
-                celery_send_mail.delay(
-                    subject_receiver,
-                    html_content_receiver,
-                    settings.DEFAULT_FROM_EMAIL,
-                    email_to_receiver,
-                )
-            else:
-                sinc_celery_send_mail(
-                    subject_sender,
-                    html_content_sender,
-                    settings.DEFAULT_FROM_EMAIL,
-                    email_to_sender,
-                )
-
-                sinc_celery_send_mail(
-                    subject_receiver,
-                    html_content_receiver,
-                    settings.DEFAULT_FROM_EMAIL,
-                    email_to_receiver,
-                )
-
             request.session["success_message"] = "Transação confirmada com sucesso!"
-            
+
             return redirect("home")
         else:
             return render(
