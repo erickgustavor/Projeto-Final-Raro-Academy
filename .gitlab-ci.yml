@@ -12,9 +12,6 @@ deploy:
     
     # Envia o restante do código para a EC2
     - scp -o StrictHostKeyChecking=no -i ec2_key.pem -r ./* $EC2_USER@$EC2_HOST:/home/ubuntu/app/
-
-    # Reinstaura o diretório .git com `git reset --hard HEAD` se necessário em outras etapas
-    - git reset --hard HEAD
     
     - ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
         cd /home/ubuntu/app/
