@@ -31,6 +31,7 @@ class TransactionForm(forms.Form):
 
     def __init__(self, *args, user=None, **kwargs):
         super(TransactionForm, self).__init__(*args, **kwargs)
+        self.user = user
         if user:
             to_accounts_cpf = Transaction.objects.filter(from_account=user).values_list(
                 "to_account", flat=True
@@ -52,5 +53,8 @@ class TransactionForm(forms.Form):
 
             to_account = Account.objects.get(cpf=to_account_cpf)
             cleaned_data['to_account'] = to_account
+        
+        if to_account_cpf == self.user.cpf:
+            raise ValidationError("Você não pode fazer uma transferência para sua própria conta.")
 
         return cleaned_data
