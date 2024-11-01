@@ -8,8 +8,8 @@ deploy:
     - echo "$EC2_KEY" > ec2_key.pem
     - chmod 600 ec2_key.pem
     
-    # Envia todo o conteúdo, incluindo arquivos ocultos, para a EC2
-    - scp -o StrictHostKeyChecking=no -i ec2_key.pem -r ./* ./.??* $EC2_USER@$EC2_HOST:/home/ubuntu/app/
+    # Envia todo o conteúdo, exceto o diretório .git
+    - rsync -av --exclude='.git' -e "ssh -i ec2_key.pem -o StrictHostKeyChecking=no" ./ $EC2_USER@$EC2_HOST:/home/ubuntu/app/
 
     # Conecte-se à EC2 e execute o Docker Compose Plugin
     - ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
