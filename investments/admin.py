@@ -4,7 +4,7 @@ from .models import ProductInvestment, Investment, Indexer
 
 admin.site.register(Investment)
 admin.site.register(Indexer)
-
+admin.site.register(ProductInvestment)
 
 @admin.register(ProductInvestment)
 class ProductInvestmentAdmin(admin.ModelAdmin):
