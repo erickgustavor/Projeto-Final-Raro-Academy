@@ -6,19 +6,27 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-
-    <div class="stats">
-        <div class="stat-item">
-            <h3>Total de usuários ativos:</h3>
-            <p>{{ total_active_users }}</p>
-            <h4>Usuários Premium:</h4>
-            <p>{{ premium_users }}</p>
+    <h1>BankCaps Administration</h1>
+    <div class="container">
+        <div class="stats">
+            <div class="stat-item">
+                <div class="active-users">
+                    <h3>Total de usuários ativos:</h3>
+                    <p>{{ total_active_users }}</p>
+                </div>
+                <div class="premium-users">
+                    <h4>Usuários Premium:</h4>
+                    <p>{{ premium_users }}</p>
+                </div>
+            </div>
+            <div class="stat-item">
+                <h3>Total investido:</h3>
+                <p>R$ {{ total_invested }}</p>
+            </div>
         </div>
-        <div class="stat-item">
-            <h3>Total investido:</h3>
-            <p>R$ {{ total_invested }}</p>
+        <div class="button-container">
+            <a href="{% url 'admin:investments_productinvestment_add' %}" class="button">Cadastrar novo produto</a>
         </div>
     </div>
-</div>
+
 {% endblock %}
