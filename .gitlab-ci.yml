@@ -3,8 +3,10 @@ stages:
 
 deploy:
   stage: deploy
+  image: alpine:latest  # Imagem que suporta rsync
+  before_script:
+    - apk add --no-cache openssh rsync  # Instale SSH e rsync
   script:
-    # Crie o arquivo de chave SSH a partir da variável EC2_KEY
     - echo "$EC2_KEY" > ec2_key.pem
     - chmod 600 ec2_key.pem
     
@@ -19,3 +21,4 @@ deploy:
       EOF
   only:
     - develop
+
