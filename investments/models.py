@@ -73,6 +73,15 @@ class ProductInvestment(models.Model):
                 )) / 365)/100
         return (tax_daily)
 
+    def get_monthly_tax(self):
+        tax_monthly = (
+            (
+                Decimal(self.tax)
+                + (Decimal(self.indexer.rate) * Decimal(self.index_multiplier))
+            )
+        )
+        return round(tax_monthly, 2)
+
 
 class Investment(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -81,8 +90,7 @@ class Investment(models.Model):
     accumulated_income = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
     initial_date = models.DateField(auto_now_add=True)
-    # due_date = models.DateField(null=True, blank=True)
-    rescue_data = models.DateField(null=True, blank=True)
+    rescue_date = models.DateField(null=True, blank=True)
     status = models.CharField(
         max_length=10,
         choices=[
@@ -103,22 +111,24 @@ class Investment(models.Model):
         ) * self.product.get_daily_tax()
         print(self.accumulated_income)
 
-    def rescue_investment(self):
+    def rescue_investment(self, rescue_status='resgatado'):
         if self.status == "ativo":
             total_amount = self.applied_value + self.accumulated_income
             self.account.balance += (
                 total_amount
             )
             self.account.save()
-            self.rescue_data = timezone.now()
-            self.status = "resgatado"
+            self.rescue_date = timezone.now()
+            self.status = rescue_status
             self.save()
             return total_amount
         else:
             raise ValueError("Este investimento não pode ser resgatado.")
 
     def save(self, *args, **kwargs):
-        # Se não houver 'rescue_data', usa 'product.final_date' se disponível
-        if not self.rescue_data and self.product.final_date:
-            self.rescue_data = self.product.final_date
+        if all([
+            not self.pk,
+            not self.rescue_date
+        ]):
+            self.rescue_date = self.product.final_date
         super().save(*args, **kwargs)

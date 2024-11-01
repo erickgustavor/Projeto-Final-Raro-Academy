@@ -1,12 +1,19 @@
-
 {% extends "base_generic.html" %}
 
 {% block content %}
   <h2>{{ product.name }}</h2>
-  <p>Taxa Diaria total: {{ product.get_daily_tax }}%</p>
+  <p>Taxa total anual: {{ product.get_monthly_tax }}%</p>
+  <p>Taxa Indexador anual: {{ product.indexer.name }}: {{ product.indexer.rate }}%</p>
+  <p>Taxa administrativa anual: {{ product.tax }}%</p>
   <p>Valor Mínimo: {{ product.minimum_value }}</p>
   <p>Data de Início: {{ product.start_date }}</p>
   <p>Validade: {{ product.final_date }}</p>
 
-  <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+  {% if product.is_premium and user.is_premium %}
+    <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+  {% elif not product.is_premium %}
+    <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+  {% else %}
+    <p>Este produto é premium e só pode ser contratado por usuários premium.</p>
+  {% endif %}
 {% endblock %}
