@@ -2,19 +2,11 @@
 {% load static %}
 
 {% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/custom_admin.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/custom_dashboard.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="header">
-        <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-image">
-        <div class="banner">Banner principal</div>
-        <div class="welcome-logout">
-            <span class="welcome">Olá, {{ request.user.username }}</span>
-            <a href="{% url 'logout' %}" class="logout-link">Sair</a>
-        </div>
-    </div>
 
     <div class="stats">
         <div class="stat-item">
