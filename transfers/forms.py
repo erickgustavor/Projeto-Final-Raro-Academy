@@ -44,6 +44,9 @@ class TransactionForm(forms.Form):
         to_account = cleaned_data.get("to_account")
         to_account_cpf = cleaned_data.get("to_account_cpf")
 
+        if to_account and to_account_cpf:
+            raise ValidationError("Você só pode selecionar uma opção de conta de destino: escolha entre a conta existente ou insira um novo CPF.")
+
         if not to_account and not to_account_cpf:
             raise ValidationError("Selecione um contato existente ou insira um novo CPF.")
 
