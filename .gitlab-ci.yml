@@ -3,19 +3,23 @@ stages:
 
 deploy:
   stage: deploy
-  image: alpine:latest
-  before_script:
-    - apk add --no-cache openssh  # Apenas SSH
   script:
     - echo "$EC2_KEY" > ec2_key.pem
     - chmod 600 ec2_key.pem
 
-    # Envia todo o conteúdo, exceto o diretório .git
+    # Remover o diretório .git temporariamente para evitar erros de permissão
+    - rm -rf .git
+    
+    # Envia o restante do código para a EC2
     - scp -o StrictHostKeyChecking=no -i ec2_key.pem -r ./* $EC2_USER@$EC2_HOST:/home/ubuntu/app/
 
-    # Conecte-se à EC2 e execute o Docker Compose Plugin
+    # Reinstaura o diretório .git com `git reset --hard HEAD` se necessário em outras etapas
+    - git reset --hard HEAD
+    
     - ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-        cd /home/ubuntu/app/ && docker compose down && docker compose up -d --build
+        cd /home/ubuntu/app/
+        docker compose down
+        docker compose up -d --build
       EOF
   only:
     - develop
