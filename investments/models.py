@@ -1,15 +1,8 @@
-# from enum import Enum
 from django.db import models
 from django.utils import timezone
 from account.models import Account
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
-
-
-# class InvestmentRangeDateEnum(Enum):
-#     ONE_YEAR = 365
-#     ONE_MONTH = 30
-#     ONE_WEEK = 7
 
 
 class Indexer(models.Model):
@@ -42,16 +35,8 @@ class ProductInvestment(models.Model):
         help_text="Multiplicador do indexador",
     )
     indexer = models.ForeignKey(Indexer, on_delete=models.CASCADE)
-    # range_date = models.IntegerField(
-    #     choices=[
-    #         (InvestmentRangeDateEnum.ONE_YEAR.value, "1 ano"),
-    #         (InvestmentRangeDateEnum.ONE_MONTH.value, "1 mês"),
-    #         (InvestmentRangeDateEnum.ONE_WEEK.value, "1 semana"),
-    #     ],
-    #     default=InvestmentRangeDateEnum.ONE_YEAR.value,
-    # )
-    start_date = models.DateField(auto_now_add=True)
-    final_date = models.DateField(
+    start_date = models.DateTimeField(auto_now_add=True)
+    final_date = models.DateTimeField(
         default=timezone.now() + relativedelta(months=3))
     minimum_value = models.DecimalField(
         max_digits=10,
@@ -89,7 +74,7 @@ class Investment(models.Model):
     applied_value = models.DecimalField(max_digits=10, decimal_places=2)
     accumulated_income = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
-    initial_date = models.DateField(auto_now_add=True)
+    initial_date = models.DateTimeField(auto_now_add=True)
     rescue_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
         max_length=10,

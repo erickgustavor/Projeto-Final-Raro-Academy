@@ -38,6 +38,7 @@ USING_REDIS = os.getenv("USING_REDIS") == "True"
 
 ALLOWED_HOSTS = ["*"]
 
+
 AUTH_USER_MODEL = "account.Account"
 # Application definition
 

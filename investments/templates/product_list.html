@@ -1,43 +1,73 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h2>Produtos de Investimento</h2>
-  <h4>Todos nossos investimentos oferecem juros composto em seus rendimentos e liquidez diária</h4>
-  
-  <form method="GET" action=".">
-    <label for="indexer">Indexador:</label>
-    <select name="indexer">
-      <option value="" {% if request.GET.indexer == "" %}selected{% endif %}>Todos</option>
-      {% for indexer in indexers %}
-        <option value="{{ indexer.id }}" {% if request.GET.indexer == indexer %}selected{% endif %}>{{ indexer }}</option>
-      {% endfor %}
-    </select>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/insvestments.css' %}">
+<div class="container mt-5">
+    <h2>Produtos de Investimento</h2>
+    <p>Todos nossos investimentos oferecem juros compostos em seus rendimentos e liquidez diária.</p>
 
-    <label for="minimum_value">Valor Mínimo:</label>
-    <input type="number" name="minimum_value" value="{{ request.GET.minimum_value }}">
-
-    <label for="final_date">Data de Vencimento:</label>
-    <input type="date" name="final_date" value="{{ request.GET.final_date }}">
-
-    <label for="is_premium">Premium:</label>
-    <select name="is_premium">
-      <option value="" {% if request.GET.is_premium == "" %}selected{% endif %}>Todos</option>
-      <option value="True" {% if request.GET.is_premium == "True" %}selected{% endif %}>Sim</option>
-      <option value="False" {% if request.GET.is_premium == "False" %}selected{% endif %}>Não</option>
-    </select>
-
-    <button type="submit">Filtrar</button>
-  </form>
-
-  <ul>
-    {% for product in products %}
-      <li>
-        <strong>{{ product.name }}</strong><br/> - Premium: {{ product.is_premium }}<br/>
-        - <a href="{% url 'product_detail' product.id %}">Ver Detalhes</a><br/>
-      </li>
-    {% endfor %}
-  </ul>
-
-  <strong> Usuário: {{ user.username }}</strong><br/>
-  <strong> Saldo: {{ user.balance }}</strong>
+    <form method="GET" action=".">
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Nome do Investimento</th>
+                    <th>Taxa anual base</th>
+                    <th>Validade</th>
+                    <th>Valor Mínimo</th>
+                    <th>Indexador</th>
+                    <th>Premium</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>
+                      <input type="date" name="validate" id="validate" class="form-control" value="{{ request.GET.validate }}">
+                    </th>
+                    <th>
+                        <input type="number" name="minimum_value" id="minimum_value" class="form-control" placeholder="Valor Mínimo" value="{{ request.GET.minimum_value }}">
+                    </th>
+                    <th>
+                        <select name="indexer" id="indexer" class="form-select">
+                            <option value="">Todos</option>
+                            {% for indexer in indexers %}
+                                <option value="{{ indexer.id }}" {% if request.GET.indexer == indexer.id|stringformat:"s" %}selected{% endif %}>{{ indexer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </th>
+                    <th>
+                        <select name="is_premium" id="is_premium" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="True" {% if request.GET.is_premium == "True" %}selected{% endif %}>Sim</option>
+                            <option value="False" {% if request.GET.is_premium == "False" %}selected{% endif %}>Não</option>
+                        </select>
+                    </th>
+                    <th>
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></td>
+                        <td>{{ product.get_monthly_tax |floatformat:2 }}%</td>
+                        <td>{{ product.final_date|date:"d/m/Y" }}</td>
+                        <td>{{ product.minimum_value |floatformat:2 }}</td>
+                        <td>{{ product.indexer.name }}</td>
+                        <td>{{ product.is_premium|yesno:"Sim,Não" }}</td>
+                        <td>
+                          <a href="{% url 'investment_create' product.id %}" class="btn btn-warning btn-sm">Contratar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhum produto de investimento encontrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
 {% endblock %}

@@ -11,10 +11,12 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-from investments.tasks import update_selic
+from investments.tasks import update_selic, update_tjlp, update_cdi
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'caps_bank.settings')
 
 update_selic.delay()
+update_tjlp.delay()
+update_cdi.delay()
 
 application = get_asgi_application()
