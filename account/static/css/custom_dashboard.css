@@ -60,3 +60,65 @@ h1 {
     text-align: center;
     display: inline-block;
 }
+
+@media (min-width: 430px) and (max-width: 850px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .stat-item {
+        padding: 0px;
+        margin: -11px;
+    }
+
+    .button-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .button {
+        width: 100%;
+        max-width: 250px;
+        font-size: 0.9em;
+        margin-bottom: 50px;
+    }
+}
+
+@media (min-width: 360px) and (max-width: 429px) {
+    .container {
+        width: 90%;
+        padding: 1%; 
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .stats {
+        display: block;
+    }
+
+    .stat-item {
+        padding: 0px;
+        margin: 10px;
+    }
+
+    .button-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .button {
+        width: 100%;
+        max-width: 250px;
+        font-size: 0.9em;
+        margin-bottom: 50px;
+    }
+}
