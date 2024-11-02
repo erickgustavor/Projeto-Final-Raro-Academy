@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrato</title>
+</head>
+
+<body>
+    <h1>Extrato</h1>
+    <div id="transaction-history">
+        {% for info in infos %}
+        <p>{{ info }}</p>
+        {% empty %}
+        <p>Nenhuma transferência realizada ainda.</p>
+        {% endfor %}
+    </div>
+
+</body>
+
+</html>

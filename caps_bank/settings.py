@@ -36,7 +36,7 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = (
 )
 USING_REDIS = os.getenv("USING_REDIS") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 AUTH_USER_MODEL = "account.Account"
