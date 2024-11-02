@@ -5,21 +5,16 @@ deploy:
   stage: deploy
   script:
     - echo "$EC2_KEY" > ec2_key.pem
-    - chmod 600 ec2_key.pem
 
-    # Remover o diretório .git temporariamente para evitar erros de permissão
-    - rm -rf .git
-    
-    # Envia o restante do código para a EC2
+    - chmod 600 ec2_key.pem
+    - echo "$ENV" > .env
+    - export UID=1000
+    - export GID=1000
+
+    - ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST "sudo chown -R ubuntu:ubuntu /home/ubuntu/app && sudo chmod -R 775 /home/ubuntu/app"
     - scp -o StrictHostKeyChecking=no -i ec2_key.pem -r ./* $EC2_USER@$EC2_HOST:/home/ubuntu/app/
 
-    # Reinstaura o diretório .git com `git reset --hard HEAD` se necessário em outras etapas
-    - git reset --hard HEAD
-    
-    - ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-        cd /home/ubuntu/app/
-        docker compose down
-        docker compose up -d --build
-      EOF
+    # Executar comandos SSH sem usar EOF
+    - ssh -o StrictHostKeyChecking=no -i ec2_key.pem $EC2_USER@$EC2_HOST "cd /home/ubuntu/app/ && docker compose down && docker compose up -d --build"
   only:
     - develop

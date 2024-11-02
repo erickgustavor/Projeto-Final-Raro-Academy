@@ -1,11 +1,14 @@
 from datetime import timedelta
+from decimal import Decimal
+from itertools import groupby
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views import View
 
@@ -15,10 +18,12 @@ from account.forms import (
     RecoveryPasswordConfirmForm,
     RecoveryPasswordRequestForm,
 )
-from caps_bank.tasks import celery_send_mail, celery_send_mail
+from caps_bank.tasks import celery_send_mail
+from investments.models import Investment, ProductInvestment
 from transfers.forms import TransactionForm
 from transfers.models import Transaction
-from .models import Account, RecoveryToken
+
+from .models import Account, Deposit, RecoveryToken
 
 
 class RegisterView(View):
@@ -43,14 +48,16 @@ class RegisterView(View):
 
             subject = "Confirmação de Registro"
 
-            html_content = render_to_string("email/registration_confirmation.html", {
-                "username": username,
-                "confirmation_link": f"http://{request.get_host()}/accounts/confirm/{account.id}/"
-            })
+            html_content = render_to_string(
+                "email/registration_confirmation.html",
+                {
+                    "username": username,
+                    "confirmation_link": f"http://{request.get_host()}/accounts/confirm/{account.id}/",
+                },
+            )
 
             from_email = settings.DEFAULT_FROM_EMAIL
             to_email = email
-
 
             if settings.USING_REDIS:
                 celery_send_mail.delay(subject, html_content, from_email, to_email)
@@ -88,9 +95,7 @@ class LoginView(View):
                 login(request, account)
                 return redirect("home")
             else:
-                messages.error(
-                        request, "Informações inválidas."
-                    )
+                messages.error(request, "Informações inválidas.")
 
         return redirect("login")
 
@@ -136,10 +141,13 @@ class RecoveryPasswordView(View):
             subject = "Recuperação de Senha"
             from_email = settings.DEFAULT_FROM_EMAIL
 
-            html_content = render_to_string("email/recovery_password.html", {
-                "account": account,
-                "token": token.value,
-            })
+            html_content = render_to_string(
+                "email/recovery_password.html",
+                {
+                    "account": account,
+                    "token": token.value,
+                },
+            )
 
             if settings.USING_REDIS:
                 celery_send_mail.delay(subject, html_content, from_email, to_email)
@@ -157,6 +165,7 @@ class RecoveryPasswordView(View):
                 "confirm_form": RecoveryPasswordConfirmForm(),
             },
         )
+
 
 class RecoveryPasswordConfirmView(View):
     def post(self, request, *args, **kwargs):
@@ -199,4 +208,74 @@ class HomeView(LoginRequiredMixin, View):
                 "transactions": transactions,
                 "balance": request.user.balance,
             },
+        )
+
+
+class ExtractView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        account = request.user
+        data = []
+
+        transactions_from = [
+            {
+                "type": "transaction",
+                "description": f"Você enviou uma transferência para {Account.objects.get(cpf=to_account).username}",
+                "timestamp": timestamp,
+                "amount": -amount,
+            }
+            for timestamp, amount, to_account in Transaction.objects.filter(
+                from_account=account, is_committed=True
+            ).values_list("timestamp", "amount", "to_account")
+        ]
+        transactions_to = [
+            {
+                "type": "transaction",
+                "description": f"Você recebeu uma transfêrencia de {Account.objects.get(cpf=from_account).username}",
+                "timestamp": timestamp,
+                "amount": amount,
+            }
+            for timestamp, amount, from_account in Transaction.objects.filter(
+                to_account=account, is_committed=True
+            ).values_list("timestamp", "amount", "from_account")
+        ]
+        deposits = [
+            {
+                "type": "deposit",
+                "description": f"Depósito",
+                "timestamp": timestamp,
+                "amount": amount,
+            }
+            for timestamp, amount in Deposit.objects.filter(
+                to_account=account
+            ).values_list("timestamp", "amount")
+        ]
+        investments = [
+            {
+                "type": "investment",
+                "description": f"Resgate de {ProductInvestment.objects.get(pk=product).name}",
+                "timestamp": rescue_date,
+                "amount": applied_value + accumulated_income,
+            }
+            for applied_value, accumulated_income, rescue_date, product in Investment.objects.filter(
+                account=account, status__in=["resgatado", "vencido"]
+            ).values_list(
+                "applied_value", "accumulated_income", "rescue_date", "product"
+            )
+        ]
+
+        data = sorted(
+            transactions_from + transactions_to + deposits + investments,
+            key=lambda x: x["timestamp"],
+            reverse=True,
+        )
+
+        dates = {}
+        for key, group in groupby(data, key=lambda x: x["timestamp"].date()):
+            dates[key] = list(group)
+
+        return render(
+            request,
+            "extract.html",
+            {"account": request.user, "dates": dates},
         )

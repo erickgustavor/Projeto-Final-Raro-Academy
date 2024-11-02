@@ -1,18 +1,20 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/insvestments.css' %}">
   <h2>{{ product.name }}</h2>
-  <p>Taxa total anual: {{ product.get_monthly_tax }}%</p>
-  <p>Taxa Indexador anual: {{ product.indexer.name }}: {{ product.indexer.rate }}%</p>
-  <p>Taxa administrativa anual: {{ product.tax }}%</p>
-  <p>Valor Mínimo: {{ product.minimum_value }}</p>
-  <p>Data de Início: {{ product.start_date }}</p>
-  <p>Validade: {{ product.final_date }}</p>
+  <p>Taxa anual base: {{ product.get_monthly_tax |floatformat:2 }}%</p>
+  <p>Taxa Indexador anual: {{ product.indexer.name }}: {{ product.indexer.rate |floatformat:2 }}%</p>
+  <p>Taxa administrativa anual: {{ product.tax |floatformat:2 }}%</p>
+  <p>Valor Mínimo: {{ product.minimum_value |floatformat:2 }}</p>
+  <p>Data de Início: {{ product.start_date |date:"d/m/Y" }}</p>
+  <p>Validade: {{ product.final_date |date:"d/m/Y" }}</p>
 
   {% if product.is_premium and user.is_premium %}
-    <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+    <a href="{% url 'investment_create' product.id %}" class="btn btn-warning btn-sm">Contratar este Produto</a>
   {% elif not product.is_premium %}
-    <a href="{% url 'investment_create' product.id %}">Contratar este Produto</a>
+    <a href="{% url 'investment_create' product.id %}" class="btn btn-warning btn-sm">Contratar este Produto</a>
   {% else %}
     <p>Este produto é premium e só pode ser contratado por usuários premium.</p>
   {% endif %}
