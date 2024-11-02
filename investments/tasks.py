@@ -1,7 +1,7 @@
 from investments.utils import get_selic_rate, get_cdi_rate, get_tjlp_rate
 from .models import Indexer, Investment
 from celery import shared_task
-from datetime import date
+from django.utils import timezone
 
 
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
@@ -65,7 +65,7 @@ def update_tjlp(self):
 @shared_task(bind=True, max_retries=5, default_retry_delay=60)
 def finalize_investments(self):
     expired_investments = Investment.objects.filter(
-        rescue_date__lt=date.today(),
+        rescue_date__lt=timezone.now(),
         status="ativo"
         )
     try:

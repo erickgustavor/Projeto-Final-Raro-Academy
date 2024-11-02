@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (InvestmentCreateView,
                     MyInvestmentsListView,
+                    MyInvestmentsRescueView,
                     ProductDetailView,
                     ProductListView)
 
@@ -21,5 +22,10 @@ urlpatterns = [
         "my-investments/<int:investment_id>/",
         MyInvestmentsListView.as_view(),
         name="myinvestment_detail",
+    ),
+    path(
+        "my-investments-rerscue/<int:investment_id>/",
+        MyInvestmentsRescueView.as_view(),
+        name="myinvestment_rescue",
     ),
 ]
