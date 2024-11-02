@@ -1,5 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
+from itertools import groupby
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,7 +19,7 @@ from account.forms import (
     RecoveryPasswordRequestForm,
 )
 from caps_bank.tasks import celery_send_mail
-from investments.models import Investment
+from investments.models import Investment, ProductInvestment
 from transfers.forms import TransactionForm
 from transfers.models import Transaction
 
@@ -217,33 +218,49 @@ class ExtractView(LoginRequiredMixin, View):
         data = []
 
         transactions_from = [
-            {"type": "transaction", "timestamp": timestamp, "amount": -amount}
-            for timestamp, amount in Transaction.objects.filter(
+            {
+                "type": "transaction",
+                "description": f"Você enviou uma transferência para {Account.objects.get(cpf=to_account).username}",
+                "timestamp": timestamp,
+                "amount": -amount,
+            }
+            for timestamp, amount, to_account in Transaction.objects.filter(
                 from_account=account, is_committed=True
-            ).values_list("timestamp", "amount")
+            ).values_list("timestamp", "amount", "to_account")
         ]
         transactions_to = [
-            {"type": "transaction", "timestamp": timestamp, "amount": amount}
-            for timestamp, amount in Transaction.objects.filter(
+            {
+                "type": "transaction",
+                "description": f"Você recebeu uma transfêrencia de {Account.objects.get(cpf=from_account).username}",
+                "timestamp": timestamp,
+                "amount": amount,
+            }
+            for timestamp, amount, from_account in Transaction.objects.filter(
                 to_account=account, is_committed=True
-            ).values_list("timestamp", "amount")
+            ).values_list("timestamp", "amount", "from_account")
         ]
         deposits = [
-            {"type": "deposit", "timestamp": timestamp, "amount": amount}
+            {
+                "type": "deposit",
+                "description": f"Depósito",
+                "timestamp": timestamp,
+                "amount": amount,
+            }
             for timestamp, amount in Deposit.objects.filter(
                 to_account=account
             ).values_list("timestamp", "amount")
         ]
         investments = [
             {
-                "type": "investments",
+                "type": "investment",
+                "description": f"Resgate de {ProductInvestment.objects.get(pk=product).name}",
                 "timestamp": rescue_date,
                 "amount": applied_value + accumulated_income,
             }
-            for applied_value, accumulated_income, rescue_date in Investment.objects.filter(
+            for applied_value, accumulated_income, rescue_date, product in Investment.objects.filter(
                 account=account, status__in=["resgatado", "vencido"]
             ).values_list(
-                "applied_value", "accumulated_income", "rescue_date"
+                "applied_value", "accumulated_income", "rescue_date", "product"
             )
         ]
 
@@ -253,8 +270,12 @@ class ExtractView(LoginRequiredMixin, View):
             reverse=True,
         )
 
+        dates = {}
+        for key, group in groupby(data, key=lambda x: x["timestamp"].date()):
+            dates[key] = list(group)
+
         return render(
             request,
             "extract.html",
-            {"infos": data},
+            {"account": request.user, "dates": dates},
         )
