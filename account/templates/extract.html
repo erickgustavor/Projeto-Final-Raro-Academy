@@ -10,24 +10,19 @@
     <h2 class="text-title">Extrato</h2>
     <p class="text-subtitle">Acompanhe suas atividades dentro da conta</p>
 </div>
+{% for date, items in dates.items %}
 <div class="timeline">
-    {% for date, items in dates.items %}
+
     <div class="date-section text-light">{{ date|date:"d M/y"}}</div>
     {% for item in items %}
     <div class="timeline-item d-flex">
         <div class="timeline-icon bg-dark">
-            {% if item.type == "transaction" %}
-            <img src="{% static 'images/transaction.png' %}" alt="Ícone" class="icon">
-            {% elif item.type == "investment" %}
-            <img src="{% static 'images/investment.png' %}" alt="Ícone" class="icon">
-            {% elif item.type == "deposit" %}
-            <img src="{% static 'images/deposit.png' %}" alt="Ícone" class="icon">
-            {% endif %}
+            <img src="{% static 'images/' %}{{ item.type }}.png" alt="Ícone" class="icon">
         </div>
         <div class="timeline-content bg-dark text-light p-3 rounded">
             <div class="timeline-title">
                 <h5 class="mb-1">{{ item.description }}</h5>
-                <p class="mb-1">{{ item.timestamp|date:"H:i" }}</p>
+                <p class="mb-1">{{ item.timestamp|date:"H\hi" }}</p>
             </div>
             {% if item.amount > 0 %}
             <p class="amount text-success">
@@ -42,6 +37,8 @@
         </div>
     </div>
     {% endfor %}
+    {% empty %}
+    <h2 class="text-subtitle"> Nenhuma movimentação encontrada.</h2>
     {% endfor %}
 </div>
 </div>
