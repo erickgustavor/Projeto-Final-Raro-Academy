@@ -96,17 +96,11 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
 
             now = timezone.now()
 
-            # Variável com fim de apresentação
-            validate = request.POST.get("validate")
 
-            # Condicional apenas com fim de apresentação
-            if validate:
-                if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):
-                    commit_service.make_transaction()
-                else:
-                    transaction.is_committed = False
-            else:
+            if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):
                 commit_service.make_transaction()
+            else:
+                transaction.is_committed = False
 
             transaction.save()
 
