@@ -10,8 +10,9 @@
     <h2 class="text-title">Extrato</h2>
     <p class="text-subtitle">Acompanhe suas atividades dentro da conta</p>
 </div>
+{% for date, items in dates.items %}
 <div class="timeline">
-    {% for date, items in dates.items %}
+
     <div class="date-section text-light">{{ date|date:"d M/y"}}</div>
     {% for item in items %}
     <div class="timeline-item d-flex">
@@ -42,6 +43,8 @@
         </div>
     </div>
     {% endfor %}
+    {% empty %}
+    <h1 class="text-title"> Nenhuma movimentação encontrada.</h1>
     {% endfor %}
 </div>
 </div>
