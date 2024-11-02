@@ -41,6 +41,15 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+class Deposit(models.Model):
+    to_account = models.ForeignKey(Account, related_name="deposit", on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Depósito para {self.to_account} no valor de R${self.amount} em {self.timestamp}"
+
+
 class RecoveryToken(models.Model):
     value = models.CharField(max_length=9, unique=True)
     is_active = models.BooleanField(default=True)

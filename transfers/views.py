@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime, time
 from decimal import Decimal
 
 from django.conf import settings
@@ -9,14 +9,15 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views import View
-from datetime import datetime
+
 from account.models import Account
-from caps_bank.tasks import celery_send_mail, celery_send_mail
+from caps_bank.tasks import celery_send_mail
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
-from .services.commit_transactions_service import CommitTrasactionService
+
 from .forms import TransactionForm
 from .models import Transaction
+from .services.commit_transactions_service import CommitTrasactionService
 
 
 class TransactionView(LoginRequiredMixin, View):
