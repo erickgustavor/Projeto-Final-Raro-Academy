@@ -90,7 +90,7 @@ class Investment(models.Model):
     accumulated_income = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
     initial_date = models.DateField(auto_now_add=True)
-    rescue_date = models.DateField(null=True, blank=True)
+    rescue_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
         max_length=10,
         choices=[

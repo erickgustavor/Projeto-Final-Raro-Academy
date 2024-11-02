@@ -7,6 +7,7 @@ from .views import (
     RecoveryPasswordConfirmView,
     RecoveryPasswordView,
     RegisterView,
+    ExtractView
 )
 
 urlpatterns = [
@@ -23,5 +24,6 @@ urlpatterns = [
         RecoveryPasswordConfirmView.as_view(),
         name="password-confirm",
     ),
+    path("extract/", ExtractView.as_view(), name="extract"),
     path("", HomeView.as_view()),
 ]
