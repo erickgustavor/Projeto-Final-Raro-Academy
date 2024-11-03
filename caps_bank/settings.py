@@ -125,9 +125,9 @@ LANGUAGE_CODE = "pt-br"
 
 TIME_ZONE = "America/Sao_Paulo"
 
-USE_I18N = True
+USE_TZ = False
 
-USE_TZ = True
+SITE_ID = 1
 
 
 # Static files (CSS, JavaScript, Images)
