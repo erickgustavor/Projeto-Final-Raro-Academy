@@ -56,7 +56,7 @@
             <tbody>
                 {% for product in products %}
                     <tr>
-                        <td><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></td>
+                        <td><a href="{% url 'product_detail' product.id %} " class="btn btn-outline-primary">{{ product.name }} </a></td>
                         <td>{{ product.get_monthly_tax |floatformat:2 }}%</td>
                         <td>{{ product.final_date|date:"d/m/Y" }}</td>
                         <td>{{ product.minimum_value |floatformat:2 }}</td>
