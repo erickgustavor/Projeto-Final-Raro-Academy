@@ -67,11 +67,9 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
         token_input = request.POST.get("token")
         transaction_data = request.session.get("transaction_data")
         token = request.session["transaction_token"]
-        token_expiration = timezone.make_aware(
-            timezone.datetime.strptime(
-                request.session.get("token_expiration"), "%Y-%m-%d %H:%M:%S"
+        token_expiration = timezone.datetime.strptime(
+            request.session.get("token_expiration"), "%Y-%m-%d %H:%M:%S"
             )
-        )
 
         if timezone.now() > token_expiration:
             return render(
