@@ -1,19 +1,26 @@
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    border-bottom: 2px solid #fff;
-
+.extract {
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+    border-bottom: 1px solid #fff;
 }
 
-.text-title,
-.text-subtitle {
+.text-title {
     text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 10px;
 }
 
 .timeline {
     position: relative;
     padding: 20px 0;
-    margin-top: 20px;
+
 }
 
 .timeline::before {
@@ -72,4 +79,10 @@
 
 .amount {
     font-size: 1.2em;
+}
+
+.empty-extract {
+    text-align: center;
+    color: #888;
+    font-style: italic;
 }

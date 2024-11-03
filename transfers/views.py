@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views import View
 
-from account.models import Account
+from account.models import Account, Flag
 from caps_bank.tasks import celery_send_mail
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
@@ -69,7 +69,7 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
         token = request.session["transaction_token"]
         token_expiration = timezone.datetime.strptime(
             request.session.get("token_expiration"), "%Y-%m-%d %H:%M:%S"
-            )
+        )
 
         if timezone.now() > token_expiration:
             return render(
@@ -94,11 +94,14 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
 
             now = timezone.now()
 
-
-            if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):
-                commit_service.make_transaction()
+            scheduling = Flag.objects.get(name="scheduling")
+            if scheduling.active:
+                if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):
+                    commit_service.make_transaction()
+                else:
+                    transaction.is_committed = False
             else:
-                transaction.is_committed = False
+                commit_service.make_transaction()
 
             transaction.save()
 

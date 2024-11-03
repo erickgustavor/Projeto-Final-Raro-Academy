@@ -42,7 +42,9 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
 
 class Deposit(models.Model):
-    to_account = models.ForeignKey(Account, related_name="deposit", on_delete=models.CASCADE)
+    to_account = models.ForeignKey(
+        Account, related_name="deposit", on_delete=models.CASCADE
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -71,3 +73,8 @@ class RecoveryToken(models.Model):
             token = self.generate_numeric_token()
 
         return token
+
+
+class Flag(models.Model):
+    name = models.CharField(max_length=100, verbose_name="nome", unique=True)
+    active = models.BooleanField(default=False, verbose_name="ativo")
