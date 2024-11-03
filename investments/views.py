@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-
 from account.models import AccountType
 from .models import Indexer, ProductInvestment, Investment
 from .forms import InvestmentForm
@@ -13,27 +12,25 @@ class ProductListView(View):
     def get(self, request, *args, **kwargs):
         products = ProductInvestment.objects.all()
         indexers = Indexer.objects.all()
+
         indexer = request.GET.get("indexer")
         if indexer:
             products = products.filter(indexer=indexer)
+
         minimum_value = request.GET.get("minimum_value")
         if minimum_value:
             products = products.filter(minimum_value__gte=float(minimum_value))
-        final_date = request.GET.get("final_date")
+
+        final_date = request.GET.get("validate")
         if final_date:
-            products = products.filter(
-                final_date__lte=parse_date(
-                    final_date
-                    ))
+            products = products.filter(final_date__lte=parse_date(final_date))
+
         is_premium = request.GET.get("is_premium")
-        if is_premium == "True":
-            products = products.filter(is_premium=True)
-        elif is_premium == "False":
-            products = products.filter(is_premium=False)
+        if is_premium:
+            products = products.filter(is_premium=(is_premium == "True"))
 
         context = {
             "products": products,
-            "user": request.user,
             "indexers": indexers,
         }
         return render(request, "product_list.html", context)
@@ -114,14 +111,42 @@ class InvestmentCreateView(LoginRequiredMixin, View):
 
 
 class MyInvestmentsListView(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         investments = Investment.objects.filter(account=request.user)
+
+        min_applied_value = request.GET.get("min_applied_value")
+        min_income = request.GET.get("min_income")
+        status = request.GET.get("status")
+        initial_date = request.GET.get("initial_date")
+        rescue_date = request.GET.get("rescue_date")
+
+        if min_applied_value:
+            investments = investments.filter(
+                applied_value__gte=min_applied_value)
+        if min_income:
+            investments = investments.filter(
+                accumulated_income__gte=min_income)
+        if status:
+            investments = investments.filter(status=status)
+        if initial_date:
+            investments = investments.filter(
+                initial_date__gte=parse_date(initial_date)
+                )
+        if rescue_date:
+            investments = investments.filter(
+                rescue_date__lte=parse_date(rescue_date)
+                )
+
         context = {
             "investments": investments,
         }
         return render(request, "my_investments.html", context)
 
-    def post(self, request, *args, **kwargs):
+
+class MyInvestmentsRescueView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
         investment_id = kwargs.get("investment_id")
         investment = get_object_or_404(
             Investment, id=investment_id, account=request.user
@@ -135,6 +160,7 @@ class MyInvestmentsListView(LoginRequiredMixin, View):
                     total_amount:.2f}""",
             )
         except ValueError as e:
+            print("Error")
             messages.error(request, str(e))
 
         return redirect("my_investments")

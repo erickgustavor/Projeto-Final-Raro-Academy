@@ -32,6 +32,7 @@ class TransactionForm(forms.Form):
 
     def __init__(self, *args, user=None, **kwargs):
         super(TransactionForm, self).__init__(*args, **kwargs)
+        self.user = user
         if user:
             to_accounts_cpf = Transaction.objects.filter(from_account=user).values_list(
                 "to_account", flat=True
@@ -44,6 +45,9 @@ class TransactionForm(forms.Form):
         to_account = cleaned_data.get("to_account")
         to_account_cpf = cleaned_data.get("to_account_cpf")
 
+        if to_account and to_account_cpf:
+            raise ValidationError("Você só pode selecionar uma opção de conta de destino: escolha entre a conta existente ou insira um novo CPF.")
+
         if not to_account and not to_account_cpf:
             raise ValidationError("Selecione um contato existente ou insira um novo CPF.")
 
@@ -53,5 +57,8 @@ class TransactionForm(forms.Form):
 
             to_account = Account.objects.get(cpf=to_account_cpf)
             cleaned_data['to_account'] = to_account
+        
+        if to_account_cpf == self.user.cpf:
+            raise ValidationError("Você não pode fazer uma transferência para sua própria conta.")
 
         return cleaned_data

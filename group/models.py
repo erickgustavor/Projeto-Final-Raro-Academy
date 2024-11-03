@@ -26,12 +26,13 @@ def update_account_on_group_change(
     if action == "post_add":
         for account_id in pk_set:
             account = model.objects.get(pk=account_id)
-            account.type = AccountType.PREMIUM.value
-            account.save()
+            if not account.type == AccountType.ADMIN.value:
+                account.type = AccountType.PREMIUM.value
+                account.save()
 
     elif action == "post_remove":
         for account_id in pk_set:
             account = model.objects.get(pk=account_id)
-            if not account.group.all():
+            if not account.group.all() and not account.type == AccountType.ADMIN.value:
                 account.type = AccountType.FREE.value
             account.save()

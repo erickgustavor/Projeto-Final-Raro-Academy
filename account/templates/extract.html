@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Extrato{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/extract.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-title">Extrato</h2>
+    <p class="text-subtitle">Acompanhe suas atividades dentro da conta</p>
+</div>
+{% for date, items in dates.items %}
+<div class="timeline">
+
+    <div class="date-section text-light">{{ date|date:"d M/y"}}</div>
+    {% for item in items %}
+    <div class="timeline-item d-flex">
+        <div class="timeline-icon bg-dark">
+            <img src="{% static 'images/' %}{{ item.type }}.png" alt="Ícone" class="icon">
+        </div>
+        <div class="timeline-content bg-dark text-light p-3 rounded">
+            <div class="timeline-title">
+                <h5 class="mb-1">{{ item.description }}</h5>
+                <p class="mb-1">{{ item.timestamp|date:"H\hi" }}</p>
+            </div>
+            {% if item.amount > 0 %}
+            <p class="amount text-success">
+                R$ +{{ item.amount|floatformat:2 }}
+            </p>
+            {% else %}
+            <p class="amount text-danger">
+                R$ {{ item.amount|floatformat:2 }}
+            </p>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endfor %}
+    {% empty %}
+    <h2 class="text-subtitle"> Nenhuma movimentação encontrada.</h2>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

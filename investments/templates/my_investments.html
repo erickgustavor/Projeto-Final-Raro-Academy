@@ -1,30 +1,85 @@
-{% extends "base_generic.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-  <h2>Meus Investimentos</h2>
-  <ul>
-    {% for investment in investments %}
-    <br> <li>
-        <strong>{{ investment.product.name }}</strong><br>
-        Valor Aplicado: {{ investment.applied_value }}<br>
-        Taxa Diária total: {{ investment.product.get_daily_tax }}%<br>
-        Rendimento Acumulado: {{ investment.accumulated_income }}<br>
-        Status: {{ investment.status }}<br>
-        Início do Investimento: {{ investment.initial_date }}<br>
-        Fim do Investimento: {{ investment.rescue_data }}<br>
 
-        {% if investment.status == 'ativo' %}
-        <!-- Adiciona o formulário de resgate para cada investimento ativo -->
-        <form method="post" action="{% url 'myinvestment_detail' investment.id %}">
-            {% csrf_token %}
-            <button type="submit">Resgatar Investimento</button>
-        </form>
-        {% else %}
-        <p>Este investimento já foi resgatado ou venceu.</p>
-        {% endif %}
-      </li>
-    {% empty %}
-      <p>Você ainda não possui investimentos.</p>
-    {% endfor %}
-  </ul>
+{% load static %}
+<link rel="stylesheet" href="{% static 'investments/css/my_investments.css' %}">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'product_list' %}" class="btn btn-outline-primary">Produtos de Investimento</a>
+    </div>
+    <h2 class="text-center mb-4">Meus Investimentos</h2>
+    <p class="text-center">Visualize e acompanhe o desempenho dos seus investimentos em um só lugar, com filtros para facilitar o controle do seu portfólio.</p>
+
+    <!-- Filtros -->
+    <form method="GET" action=".">
+        <div class="row g-3 mb-3">
+            <div class="col-md-2">
+                <input type="number" name="min_applied_value" class="form-control" placeholder="Valor Aplicado Mín." value="{{ request.GET.min_applied_value }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="min_income" class="form-control" placeholder="Rendimento Mín." value="{{ request.GET.min_income }}">
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">Todos os Status</option>
+                    <option value="ativo" {% if request.GET.status == "ativo" %}selected{% endif %}>Ativo</option>
+                    <option value="resgatado" {% if request.GET.status == "resgatado" %}selected{% endif %}>Resgatado</option>
+                    <option value="vencido" {% if request.GET.status == "vencido" %}selected{% endif %}>Vencido</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+               <input type="date" name="initial_date" class="form-control" value="{{ request.GET.initial_date }}"> Data de inicio
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="rescue_date" class="form-control" value="{{ request.GET.rescue_date }}">Data de Resgate
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabela de Investimentos -->
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome do Produto</th>
+                    <th>Taxa Base Anual</th>
+                    <th>Valor Aplicado</th>
+                    <th>Rendimento Acumulado</th>
+                    <th>Status</th>
+                    <th>Data de Início</th>
+                    <th>Data de Resgate</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for investment in investments %}
+                    <tr>
+                        <td>{{ investment.product.name }}</td>
+                        <td>{{ investment.product.get_monthly_tax | floatformat:2 }}%</td>
+                        <td>{{ investment.applied_value | floatformat:2 }}</td>
+                        <td>{{ investment.accumulated_income | floatformat:2 }}</td>
+                        <td>{{ investment.status }}</td>
+                        <td>{{ investment.initial_date | date:"d/m/Y" }}</td>
+                        <td>{{ investment.rescue_date | date:"d/m/Y" }}</td>
+                        <td>
+                            {% if investment.status == 'ativo' %}
+                                <a href="{% url 'myinvestment_rescue' investment.id %}" class="btn btn-warning btn-sm">Resgatar</a>
+                            {% else %}
+                                <span class="text-muted">Resgatado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center">Você ainda não possui investimentos.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>
+
 {% endblock %}
