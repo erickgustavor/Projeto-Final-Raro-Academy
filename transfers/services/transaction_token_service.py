@@ -1,5 +1,5 @@
 from django.utils import timezone
-from django.core.mail import EmailMultiAlternatives
+from datetime import datetime, timedelta
 from transfers.models import Transaction
 from django.template.loader import render_to_string
 from django.conf import settings

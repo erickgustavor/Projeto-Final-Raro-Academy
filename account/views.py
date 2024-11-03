@@ -298,3 +298,17 @@ class ExtractView(LoginRequiredMixin, View):
             "extract.html",
             {"account": request.user, "dates": dates},
         )
+
+class CompletedTransactionsView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        transactions = Transaction.objects.filter(
+            from_account=request.user, is_committed=True
+        )
+
+        return render(
+            request,
+            "completed_transactions.html",
+            {
+                "transactions": transactions,
+            },
+        )

@@ -7,7 +7,8 @@ from .views import (
     RecoveryPasswordConfirmView,
     RecoveryPasswordView,
     RegisterView,
-    ExtractView
+    ExtractView,
+    CompletedTransactionsView
 )
 
 urlpatterns = [
@@ -25,5 +26,7 @@ urlpatterns = [
         name="password-confirm",
     ),
     path("extract/", ExtractView.as_view(), name="extract"),
+    path("completed-transactions/", CompletedTransactionsView.as_view(), name="completed-transactions"),
+
     path("", HomeView.as_view()),
 ]
