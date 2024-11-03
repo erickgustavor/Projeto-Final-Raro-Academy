@@ -23,7 +23,7 @@
     {% block navbar %}
     <nav class="navbar bg-base">
         <a class="navbar-brand" href="{% url 'home' %}">
-            <img src="{% static 'images/logo.png' %}" alt="Logo do CAPS Bank" width="40"
+            <img src="{% static 'images/logo.png' %}" alt="Logo do CAPS Bank" width="100"
                 class="d-inline-block align-text-top">
         </a>
 
@@ -33,7 +33,7 @@
 
         <!-- Saudação ao usuário -->
         <span class="navbar-text text-light">
-            Olá, {{ account.username }}!
+            Olá, {{ user.username }}!
             <a href="{% url 'logout' %}" class="btn btn-outline-danger text-light"> Sair </a>
         </span>
     </nav>
