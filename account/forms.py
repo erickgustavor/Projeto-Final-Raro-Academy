@@ -10,23 +10,31 @@ from account.validations.registration_validations import (
 
 
 class RecoveryPasswordRequestForm(forms.Form):
-    email = forms.EmailField(max_length=150, label="Email")
+    email = forms.EmailField(
+        max_length=150,
+        label="Email",
+        widget=forms.EmailInput(attrs={"class": "form-control"}),
+    )
 
-    def clean_email(self):
-        email = self.data.get("email")
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
         if not Account.objects.filter(email=email).exists():
             raise ValidationError(
-                "Não há nenhuma conta com esse email, por favor, verifique o email novamente."
+                "Não há nenhuma conta com esse email, por favor, verifique o email novamente.",
             )
 
-        return email
+        return cleaned_data
 
 
 class RecoveryPasswordConfirmForm(forms.Form):
-    token = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput, label="Senha")
+    token = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"}), label="Senha"
+    )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput, label="Confirmar Senha"
+        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        label="Confirmar Senha",
     )
 
     def clean(self):
@@ -36,7 +44,7 @@ class RecoveryPasswordConfirmForm(forms.Form):
         confirm_password = cleaned_data.get("confirm_password")
 
         validate_password(password, confirm_password)
-        
+
         if not RecoveryToken.objects.filter(value=token):
             raise ValidationError("Código informado não existe ou expirou.")
 
