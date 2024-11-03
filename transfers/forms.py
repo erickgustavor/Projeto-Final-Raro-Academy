@@ -10,13 +10,14 @@ class TransactionForm(forms.Form):
         empty_label="Selecione o contato de destino",
         to_field_name="cpf",
         required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
 
     to_account_cpf = forms.CharField(
         label="Novo contato",
         max_length=11,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'Digite o CPF do novo contato'}),
+        widget=forms.TextInput(attrs={'class': 'form-control','placeholder': 'Digite o CPF do novo contato'}),
     )
 
     amount = forms.DecimalField(
@@ -25,7 +26,7 @@ class TransactionForm(forms.Form):
         decimal_places=2,
         required=True,
         widget=forms.NumberInput(
-            attrs={"placeholder": "Insira o valor da transferência"}
+        attrs={"class": "form-control","placeholder": "Insira o valor da transferência"}
         ),
     )
 
