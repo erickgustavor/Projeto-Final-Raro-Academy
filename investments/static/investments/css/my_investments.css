@@ -1,9 +1,6 @@
 /* Container principal */
 .container {
-    background-color: #2d2e2e;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Título e subtítulo */
@@ -124,9 +121,7 @@ form .btn-primary:hover {
 
 /* Telas muito pequenas - Smartphones menores */
 @media (max-width: 576px) {
-    /* .table-responsive {
-        padding: 10px;
-    } */
+    
 
     .table th, .table td {
         font-size: 0.50rem;
