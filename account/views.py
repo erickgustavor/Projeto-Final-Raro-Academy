@@ -242,7 +242,7 @@ class ExtractView(LoginRequiredMixin, View):
         deposits = [
             {
                 "type": "deposit",
-                "description": f"Depósito",
+                "description": "Depósito" if amount > 0 else "Retirada",
                 "timestamp": timestamp,
                 "amount": amount,
             }
@@ -250,7 +250,22 @@ class ExtractView(LoginRequiredMixin, View):
                 to_account=account
             ).values_list("timestamp", "amount")
         ]
-        investments = [
+
+        investments_buy = [
+            {
+                "type": "investment",
+                "description": f"Compra de {ProductInvestment.objects.get(pk=product).name}",
+                "timestamp": initial_date,
+                "amount": -applied_value,
+            }
+            for applied_value, accumulated_income, initial_date, product in Investment.objects.filter(
+                account=account
+            ).values_list(
+                "applied_value", "accumulated_income", "initial_date", "product"
+            )
+        ]
+
+        investments_rescue = [
             {
                 "type": "investment",
                 "description": f"Resgate de {ProductInvestment.objects.get(pk=product).name}",
@@ -265,7 +280,11 @@ class ExtractView(LoginRequiredMixin, View):
         ]
 
         data = sorted(
-            transactions_from + transactions_to + deposits + investments,
+            transactions_from
+            + transactions_to
+            + deposits
+            + investments_buy
+            + investments_rescue,
             key=lambda x: x["timestamp"],
             reverse=True,
         )

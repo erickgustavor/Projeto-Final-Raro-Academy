@@ -96,6 +96,7 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
 
             now = timezone.now()
 
+
             if 0 <= now.weekday() <= 4 and time(8, 0) <= now.time() <= time(18, 0):
                 commit_service.make_transaction()
             else:
