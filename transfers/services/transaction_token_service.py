@@ -16,8 +16,8 @@ class TransactionTokenService:
     def generate_token(self):
         self.token = ''.join(random.choices(string.digits, k=6))  
         expiration_minutes = int(os.getenv('TOKEN_EXPIRATION_MINUTES', 5))
-        self.token_expiration = datetime.now() + timedelta(minutes=expiration_minutes)
-        self.send_token_email()
+        self.token_expiration = timezone.now() + timezone.timedelta(minutes=expiration_minutes)
+        self.send_token_email() 
 
     def send_token_email(self):
         subject = "Token para confirmação da transferência"
