@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from account.models import Account
 from decimal import Decimal
-from dateutil.relativedelta import relativedelta
 
 
 class Indexer(models.Model):
@@ -36,8 +35,7 @@ class ProductInvestment(models.Model):
     )
     indexer = models.ForeignKey(Indexer, on_delete=models.CASCADE)
     start_date = models.DateTimeField(auto_now_add=True)
-    final_date = models.DateTimeField(
-        default=timezone.now() + relativedelta(months=3))
+    final_date = models.DateTimeField()
     minimum_value = models.DecimalField(
         max_digits=10,
         decimal_places=2,
