@@ -52,8 +52,8 @@ class RecoveryPasswordConfirmForm(forms.Form):
 
 
 class LoginForm(forms.ModelForm):
-    email = forms.EmailField(max_length=150, label="Email")
-    password = forms.CharField(widget=forms.PasswordInput, label="Senha")
+    email = forms.EmailField(max_length=150, label="Email", widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha")
 
     class Meta:
         model = Account
@@ -64,11 +64,11 @@ class LoginForm(forms.ModelForm):
 
 
 class AccountRegistrationForm(forms.ModelForm):
-    email = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput, label="Senha")
-    confirm_password = forms.CharField(
-        widget=forms.PasswordInput, label="Confirmar Senha"
-    )
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
+    email = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
+    cpf = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha")
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha")
 
     class Meta:
         model = Account

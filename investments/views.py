@@ -64,8 +64,8 @@ class InvestmentCreateView(LoginRequiredMixin, View):
         }
 
         if product.is_premium and request.user.type not in [
-            AccountType.ADMIN,
-            AccountType.PREMIUM,
+            AccountType.ADMIN.value,
+            AccountType.PREMIUM.value,
         ]:
             messages.error(
                 request,

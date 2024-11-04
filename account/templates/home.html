@@ -1,68 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        /* Adiciona estilos para o formulário invisível */
-        #transaction-form {
-            display: none;
-            position: absolute; /* Para posicionar adequadamente o formulário */
-            z-index: 1000; /* Para garantir que ele fique acima de outros elementos */
-            background: white; /* Fundo branco para o formulário */
-            padding: 20px; /* Espaçamento interno */
-            border: 1px solid #ccc; /* Borda para o formulário */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para o formulário */
-        }
-    </style>
-</head>
-<body>
-    <h1>Bem-vindo à Página Inicial!</h1>
-    <p>Olá, {{user.username}}! Você está logado.</p>
-    <a href="{% url 'logout' %}">Sair</a>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+  <div class="balance-box">
+    <span>Saldo em Conta: <span id="saldo-valor">R$ {{ balance }}</span></span>
+    <button id="toggle-visibility" class="toggle-visibility" onclick="toggleSaldo()">👁️</button>
+  </div>
+
+  <div class="options">
+    <a href="{% url 'extract' %}">Extrato</a>
+
+    <div class="accordion w-100" id="transferAccordion">
+        <a id="transferToggle" class="collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransfer" aria-expanded="false" aria-controls="collapseTransfer">
+            Transferência
+        </a>
+      <div id="collapseTransfer" class="accordion-collapse collapse" aria-labelledby="headingTransfer" data-bs-parent="#transferAccordion">
+        <div class="accordion-body d-flex flex-column">
+          <a href="{% url 'completed-transactions' %}">Transferências Realizadas</a>
+          <a href="#" id="novaTransferenciaBtn">Nova Transferência</a>
+          <div class="transfer-form" id="transferForm">
+            <form action="{% url 'transaction' %}" method="post">
+              {% csrf_token %}
+            <label for="valorInput">Valor a transferir:</label>
+            {{ form.amount }}
+            <label for="destinatarioInput">Transferir para o contato:</label>
+            {{ form.to_account }}
+            <label for="destinatarioInput">Transferir para nova conta:</label>
+            {{ form.to_account_cpf }}
+            <button class="btn btn-primary">Realizar Transferência</button>
+          </form>
+
+      
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion w-100" id="investAccordion">
+        <a id="investToggle" class="collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInvest" aria-expanded="false" aria-controls="collapseInvest">
+            Investimentos
+        </a>
+      <div id="collapseInvest" class="accordion-collapse collapse" aria-labelledby="headingInvest" data-bs-parent="#investAccordion">
+        <div class="accordion-body d-flex flex-column">
+          <a href="{% url 'my_investments' %}">Meus Investimentos</a>
+          <a href="{% url 'product_list' %}">Novo Investimento</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function toggleSaldo() {
+      const saldoValor = document.getElementById('saldo-valor');
+      const toggleButton = document.getElementById('toggle-visibility');
+      if (saldoValor.style.display === 'none') {
+        saldoValor.style.display = 'inline';
+        toggleButton.textContent = '👁️';
+      } else {
+        saldoValor.style.display = 'none';
+        toggleButton.textContent = '👁️‍🗨️';
+      }
+    }
+
+    document.getElementById('transferToggle').onclick = function() {
+        const transferSection = document.getElementById('collapseTransfer');
+        transferSection.style.display = transferSection.style.display === 'none' ? 'block' : 'none';
+    };
+
+    document.getElementById('novaTransferenciaBtn').onclick = function() {
+        const transferForm = document.getElementById('transferForm');
+        transferForm.style.display = transferForm.style.display === 'none' || transferForm.style.display === '' ? 'block' : 'none';
+    };
+
+    document.getElementById('investToggle').onclick = function() {
+    const investSection = document.getElementById('collapseInvest');
+    investSection.style.display = investSection.style.display === 'none' ? 'block' : 'none';
+    };  
+
+    document.getElementById('logoutBtn').onclick = function() {
+        alert('Você saiu da conta!');
+    };
+
+
+  </script>
+    <div class="messages-error">
     {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <h1>Saldo
-        $ {{ balance }}</h1>
-    </h1>
-
-    <h1>Histórico de Transferências Realizadas</h1>
-    <div id="transaction-history">
-        {% for transaction in transactions %}
-                <p>{{ transaction }}</p>
-        {% empty %}
-            <p>Nenhuma transferência realizada ainda.</p>
+    <ul>
+        {% for message in messages %}
+            {{ message }}
         {% endfor %}
+    </ul>
+    {% endif %}
     </div>
-
-    <button id="show-form-button">Fazer Transferência</button>
-
-    <div id="transaction-form">
-        {% include 'transaction_form.html' %}
-    </div>
-
-    <script>
-        const showFormButton = document.getElementById('show-form-button');
-        const formDiv = document.getElementById('transaction-form');
-
-        showFormButton.addEventListener('click', function() {
-            formDiv.style.display = (formDiv.style.display === 'none') ? 'block' : 'none';
-        });
-
-        
-        document.addEventListener('click', function(event) {
-            const isClickInside = formDiv.contains(event.target) || showFormButton.contains(event.target);
-            if (!isClickInside) {
-                formDiv.style.display = 'none';
-            }
-        });
-    </script>
-</body>
-</html>
+{% endblock %}
