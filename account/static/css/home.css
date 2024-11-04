@@ -113,3 +113,9 @@ body {
 .transfer-form input {
   margin-bottom: 10px;
 }
+
+.messages-error {
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+}

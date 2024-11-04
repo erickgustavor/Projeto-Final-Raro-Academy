@@ -102,7 +102,7 @@ class ConfirmTransactionView(LoginRequiredMixin, View):
 
             transaction.save()
 
-            request.session["success_message"] = "Transação confirmada com sucesso!"
+            messages.success(request, "Transação confirmada com sucesso!")
 
             return redirect("home")
         else:
