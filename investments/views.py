@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.utils.dateparse import parse_date
 
 
-class ProductListView(View):
+class ProductListView(LoginRequiredMixin,View):
     def get(self, request, *args, **kwargs):
         products = ProductInvestment.objects.all()
         indexers = Indexer.objects.all()
