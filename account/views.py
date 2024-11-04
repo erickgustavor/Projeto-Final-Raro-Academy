@@ -122,7 +122,7 @@ class RecoveryPasswordView(View):
     def get(self, request, *args, **kwargs):
         return render(
             request,
-            "registration/recovery_password.html",
+            "recovery_password.html",
             {
                 "request_form": RecoveryPasswordRequestForm(),
                 "confirm_form": RecoveryPasswordConfirmForm(),
@@ -157,9 +157,12 @@ class RecoveryPasswordView(View):
 
             return redirect("password-recovery")
 
+        for error in form.non_field_errors():
+            messages.error(request, error)
+
         return render(
             request,
-            "registration/recovery_password.html",
+            "recovery_password.html",
             {
                 "request_form": form,
                 "confirm_form": RecoveryPasswordConfirmForm(),
