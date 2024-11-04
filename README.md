@@ -11,7 +11,7 @@ Quem nunca ficou até depois da hora em alguma aula que atire a primeira pedra�
 ![Entity–Relationship-Diagram](assets/ER1.svg)
 
 ## ⚙️ Pre-requisitos
-- Python (3.12 ou superior)
+- Python (3.10 ou superior)
 - Docker
 - Docker Compose
 
@@ -53,3 +53,27 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```
+## 🔒 Administração
+> É necessário fazer todo o processo para rodar sem o docker.
+
+Para criar uma conta administrativa, é preciso rodar o comando:
+
+```
+python manage.py createsuperuser 
+```
+
+O acesso a administração se dá por meio do caminho `/admin/`.
+
+## 🧪 Teste
+
+> É necessário fazer todo o processo para rodar sem o docker.
+
+Para rodar os testes é só rodar o comando:
+
+```
+python manage.py test
+```
+
+## 🌍 Deploy
+
+A aplicação utilizou-se de deploy continuo, usando os serviços *free tier* da [AWS](https://aws.amazon.com/pt/), que está disponibilizada pelo IP: http://54.94.39.176/
