@@ -66,6 +66,14 @@ class RegisterView(View):
             messages.success(request, "Um email de confirmação foi enviado para a sua conta.")
             return redirect("register")
 
+        for error in form.non_field_errors():
+            messages.error(request, error)
+        for field, errors in form.errors.items():
+            for error in errors:
+                if field == "__all__":
+                    continue
+                messages.error(request, f"{field.upper()}: {error}")
+
         return render(request, "registration/register.html", {"form": form})
 
 
@@ -96,6 +104,14 @@ class LoginView(View):
                 return redirect("home")
             else:
                 messages.error(request, "Informações inválidas.")
+
+        for error in form.non_field_errors():
+            messages.error(request, error)
+        for field, errors in form.errors.items():
+            for error in errors:
+                if field == "__all__":
+                    continue
+                messages.error(request, f"{field.upper()}: {error}")
 
         return redirect("login")
 
@@ -159,6 +175,11 @@ class RecoveryPasswordView(View):
 
         for error in form.non_field_errors():
             messages.error(request, error)
+        for field, errors in form.errors.items():
+            for error in errors:
+                if field == "__all__":
+                    continue
+                messages.error(request, f"{field.upper()}: {error}")
 
         return render(
             request,
@@ -190,8 +211,15 @@ class RecoveryPasswordConfirmView(View):
 
             messages.error("O código expirou, solicite outro código.")
 
+
         for error in form.non_field_errors():
             messages.error(request, error)
+        for field, errors in form.errors.items():
+            for error in errors:
+                if field == "__all__":
+                    continue
+                messages.error(request, f"{field.upper()}: {error}")
+                
         return redirect("password-recovery")
 
 

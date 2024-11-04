@@ -29,18 +29,4 @@
     <a href="{% url 'password-recovery' %}"
       class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ml-10">Esqueceu a senha?</a>
   </div>
-  <div class="messages-error">
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      {{ message }}
-      {% endfor %}
-    </ul>
-    {% endif %}
-  </div>
-</div>
-<p>
-  {% for error in form.non_field_errors %}
-  {{ error }}
-  {% endfor %} </p>
 {% endblock %}

@@ -41,27 +41,27 @@
 
     <form method="GET" action=".">
         <table class="table table-striped table-bordered bg-dark mt-4">
-            <thead class="table-light">
+            <thead class="table-dark">
                 <tr>
-                    <th>Nome do Investimento</th>
-                    <th>Taxa Anual Base</th>
-                    <th>Validade</th>
-                    <th>Valor Mínimo</th>
-                    <th>Indexador</th>
-                    <th>Premium</th>
-                    <th></th>
+                    <th class="text-light">Nome do Investimento</th>
+                    <th class="text-light">Taxa Anual Base</th>
+                    <th class="text-light">Validade</th>
+                    <th class="text-light">Valor Mínimo</th>
+                    <th class="text-light">Indexador</th>
+                    <th class="text-light">Premium</th>
+                    <th class="text-light"></th>
                 </tr>
                 
             </thead>
-            <tbody>
+            <tbody class="text-light">
                 {% for product in products %}
                     <tr>
                         <td><a href="{% url 'product_detail' product.id %} " class="btn btn-outline-primary">{{ product.name }} </a></td>
-                        <td>{{ product.get_monthly_tax |floatformat:2 }}%</td>
-                        <td>{{ product.final_date|date:"d/m/Y" }}</td>
-                        <td>{{ product.minimum_value |floatformat:2 }}</td>
-                        <td>{{ product.indexer.name }}</td>
-                        <td>{{ product.is_premium|yesno:"Sim,Não" }}</td>
+                        <td class="text-light">{{ product.get_monthly_tax |floatformat:2 }}%</td>
+                        <td class="text-light">{{ product.final_date|date:"d/m/Y" }}</td >
+                        <td class="text-light">{{ product.minimum_value |floatformat:2 }}</td >
+                        <td class="text-light">{{ product.indexer.name }}</td >
+                        <td class="text-light">{{ product.is_premium|yesno:"Sim,Não" }}</td>
                         <td>
                           <a href="{% url 'investment_create' product.id %}" class="btn btn-warning btn-sm">Contratar</a>
                         </td>

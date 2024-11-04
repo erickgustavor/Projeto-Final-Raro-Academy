@@ -94,18 +94,26 @@
             </div>
         </div>
     </nav>
-
-
     {% endblock %}
 
-
+    {% if messages %}
+    <div class="container mt-2">
+        {% for message in messages %}
+        <div {% if message.tags == "success" %} class="alert alert-success alert-dismissible" {% elif message.tags == "error" %}
+            class="alert alert-danger alert-dismissible fade show" {% endif %} role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
 
 
     <footer class="bg-dark text-center py-3 mt-4">
-        <p>&copy; 2024 - Caps Bank</p>
+        <p>&copy; 2024 - BankCaps - Exterminadores de bugs futuros</p>
     </footer>
 
 
@@ -136,15 +144,7 @@
             });
         });
     </script>
-    <div class="messages-error">
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            {{ message }}
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
+
     {% block extra_js %}{% endblock %}
 </body>
 
