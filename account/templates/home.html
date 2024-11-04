@@ -1,28 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}home{% endblock %}
+{% block title %}Home{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
 
 {% block content %}
 
-
-  <!-- Caixa de Saldo com botão de visibilidade -->
   <div class="balance-box">
     <span>Saldo em Conta: <span id="saldo-valor">R$ {{ balance }}</span></span>
     <button id="toggle-visibility" class="toggle-visibility" onclick="toggleSaldo()">👁️</button>
   </div>
 
-  <!-- Opções abaixo do saldo -->
   <div class="options">
     <a href="{% url 'extract' %}">Extrato</a>
 
-    <!-- Botão de Transferência com Accordion -->
     <div class="accordion w-100" id="transferAccordion">
-      <a class="collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransfer" aria-expanded="false" aria-controls="collapseTransfer">
-        Transferência
-      </a>
+        <a id="transferToggle" class="collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransfer" aria-expanded="false" aria-controls="collapseTransfer">
+            Transferência
+        </a>
       <div id="collapseTransfer" class="accordion-collapse collapse" aria-labelledby="headingTransfer" data-bs-parent="#transferAccordion">
         <div class="accordion-body d-flex flex-column">
           <a href="{% url 'completed-transactions' %}">Transferências Realizadas</a>
@@ -36,19 +32,19 @@
             {{ form.to_account }}
             <label for="destinatarioInput">Transferir para nova conta:</label>
             {{ form.to_account_cpf }}
-            <button class="btn btn-primary">Confirmar Transferência</button>
+            <button class="btn btn-primary">Realizar Transferência</button>
           </form>
 
+      
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Botão de Investimentos com Accordion -->
     <div class="accordion w-100" id="investAccordion">
-      <a class="collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInvest" aria-expanded="false" aria-controls="collapseInvest">
-        Investimentos
-      </a>
+        <a id="investToggle" class="collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInvest" aria-expanded="false" aria-controls="collapseInvest">
+            Investimentos
+        </a>
       <div id="collapseInvest" class="accordion-collapse collapse" aria-labelledby="headingInvest" data-bs-parent="#investAccordion">
         <div class="accordion-body d-flex flex-column">
           <a href="{% url 'my_investments' %}">Meus Investimentos</a>
@@ -72,24 +68,34 @@
       }
     }
 
-    // Script para mostrar/ocultar o formulário de nova transferência
+    document.getElementById('transferToggle').onclick = function() {
+        const transferSection = document.getElementById('collapseTransfer');
+        transferSection.style.display = transferSection.style.display === 'none' ? 'block' : 'none';
+    };
+
     document.getElementById('novaTransferenciaBtn').onclick = function() {
-      const transferForm = document.getElementById('transferForm');
-      transferForm.style.display = transferForm.style.display === 'none' || transferForm.style.display === '' ? 'block' : 'none';
+        const transferForm = document.getElementById('transferForm');
+        transferForm.style.display = transferForm.style.display === 'none' || transferForm.style.display === '' ? 'block' : 'none';
     };
 
-    // Script para o botão de logoff
+    document.getElementById('investToggle').onclick = function() {
+    const investSection = document.getElementById('collapseInvest');
+    investSection.style.display = investSection.style.display === 'none' ? 'block' : 'none';
+    };  
+
     document.getElementById('logoutBtn').onclick = function() {
-      alert('Você saiu da conta!');
-      // Aqui você pode adicionar a lógica de redirecionamento ou limpeza de sessão, se necessário.
+        alert('Você saiu da conta!');
     };
-  </script>
-            {% if messages %}
-            <ul>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
 
+
+  </script>
+    <div class="messages-error">
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </ul>
+    {% endif %}
+    </div>
 {% endblock %}

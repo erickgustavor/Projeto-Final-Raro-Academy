@@ -3,5 +3,12 @@
     box-shadow: 0px 2px 4px black;
 }
 .navbar{
+    display: flex;
     padding: 15px;
+}
+
+.navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
