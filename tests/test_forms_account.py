@@ -106,7 +106,7 @@ class AccountRegistrationFormTests(TestCase):
             'confirm_password': 'password123',
         })
         self.assertFalse(form.is_valid(), msg=form.errors)
-        self.assertIn('Endereço de e-mail inválido.', form.errors['email'])
+        self.assertIn('Endereço de e-mail invalido.', form.errors['email'])
 
     def test_passwords_do_not_match(self):
         form = AccountRegistrationForm(data={
