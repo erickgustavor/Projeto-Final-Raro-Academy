@@ -43,29 +43,29 @@
 
     <!-- Tabela de Investimentos -->
         <table class="table table-bordered table-hover align-middle">
-            <thead class="table-light">
+            <thead class="table-dark">
                 <tr>
-                    <th>Nome do Produto</th>
-                    <th>Taxa Base Anual</th>
-                    <th>Valor Aplicado</th>
-                    <th>Rendimento Acumulado</th>
-                    <th>Status</th>
-                    <th>Data de Início</th>
-                    <th>Data de Resgate</th>
-                    <th>Ações</th>
+                    <th class="text-light">Nome do Produto</th>
+                    <th class="text-light">Taxa Base Anual</th>
+                    <th class="text-light">Valor Aplicado</th>
+                    <th class="text-light">Rendimento Acumulado</th>
+                    <th class="text-light">Status</th>
+                    <th class="text-light">Data de Início</th>
+                    <th class="text-light">Data de Resgate</th>
+                    <th class="text-light">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for investment in investments %}
                     <tr>
-                        <td>{{ investment.product.name }}</td>
-                        <td>{{ investment.product.get_monthly_tax | floatformat:2 }}%</td>
-                        <td>{{ investment.applied_value | floatformat:2 }}</td>
-                        <td>{{ investment.accumulated_income | floatformat:2 }}</td>
-                        <td>{{ investment.status }}</td>
-                        <td>{{ investment.initial_date | date:"d/m/Y" }}</td>
-                        <td>{{ investment.rescue_date | date:"d/m/Y" }}</td>
-                        <td>
+                        <td class="text-light">{{ investment.product.name }}</td>
+                        <td class="text-light">{{ investment.product.get_monthly_tax | floatformat:2 }}%</td>
+                        <td class="text-light">{{ investment.applied_value | floatformat:2 }}</td>
+                        <td class="text-light">{{ investment.accumulated_income | floatformat:2 }}</td>
+                        <td class="text-light">{{ investment.status }}</td>
+                        <td class="text-light">{{ investment.initial_date | date:"d/m/Y" }}</td>
+                        <td class="text-light">{{ investment.rescue_date | date:"d/m/Y" }}</td>
+                        <td class="text-light">
                             {% if investment.status == 'ativo' %}
                                 <a href="{% url 'myinvestment_rescue' investment.id %}" class="btn btn-warning btn-sm">Resgatar</a>
                             {% else %}

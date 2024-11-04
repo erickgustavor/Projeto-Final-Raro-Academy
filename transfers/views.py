@@ -60,6 +60,11 @@ class TransactionView(LoginRequiredMixin, View):
 
         for error in form.non_field_errors():
             messages.error(request, error)
+        for field, errors in form.errors.items():
+            for error in errors:
+                if field == "__all__":
+                    continue
+                messages.error(request, f"{field.upper()}: {error}")
 
         return redirect("transaction")
 
