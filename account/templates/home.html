@@ -30,21 +30,7 @@
       <div id="collapseTransfer" class="accordion-collapse collapse" aria-labelledby="headingTransfer" data-bs-parent="#transferAccordion">
         <div class="accordion-body d-flex flex-column">
           <a href="{% url 'completed-transactions' %}">Transferências Realizadas</a>
-          <a href="#" id="novaTransferenciaBtn">Nova Transferência</a>
-          <div class="transfer-form" id="transferForm">
-            <form action="{% url 'transaction' %}" method="post">
-              {% csrf_token %}
-            <label for="valorInput">Valor a transferir:</label>
-            {{ form.amount }}
-            <label for="destinatarioInput">Transferir para o contato:</label>
-            {{ form.to_account }}
-            <label for="destinatarioInput">Transferir para nova conta:</label>
-            {{ form.to_account_cpf }}
-            <button class="btn btn-primary">Realizar Transferência</button>
-          </form>
-
-      
-          </div>
+          <a href="{% url 'transaction' %}" id="novaTransferenciaBtn">Nova Transferência</a>
         </div>
       </div>
     </div>
@@ -61,14 +47,4 @@
       </div>
     </div>
   </div>
-
-    <div class="messages-error">
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-            {{ message }}
-        {% endfor %}
-    </ul>
-    {% endif %}
-    </div>
 {% endblock %}
