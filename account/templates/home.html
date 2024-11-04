@@ -47,4 +47,18 @@
       </div>
     </div>
   </div>
+  <script>
+    function toggleSaldo() {
+      const saldoValor = document.getElementById('saldo-valor');
+      const toggleButton = document.getElementById('toggle-visibility');
+      if (saldoValor.style.display === 'none') {
+        saldoValor.style.display = 'inline';
+        toggleButton.textContent = '👁️';
+      } else {
+        saldoValor.style.display = 'none';
+        toggleButton.textContent = '👁️‍🗨️';
+      }
+    }
+
+  </script>
 {% endblock %}
