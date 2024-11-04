@@ -82,7 +82,7 @@ class LoginView(View):
 
             if not Account.objects.filter(email=email).exists():
                 messages.error(request, "Conta não cadastrada.")
-                return redirect("register")
+                return redirect("home")
 
             account = authenticate(request, email=email, password=password)
 
