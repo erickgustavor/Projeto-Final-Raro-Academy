@@ -21,7 +21,7 @@
         <p><strong>Validade:</strong> {{ product.final_date |date:"d/m/Y" }}</p>
         
         <div class="text-center mt-4">
-            {% if product.is_premium and user.is_premium %}
+            {% if product.is_premium and user.type == "premium" or user.type == "admin" %}
                 <a href="{% url 'investment_create' product.id %}" class="btn btn-warning btn-lg">Contratar este Produto</a>
             {% elif not product.is_premium %}
                 <a href="{% url 'investment_create' product.id %}" class="btn btn-warning btn-lg">Contratar este Produto</a>

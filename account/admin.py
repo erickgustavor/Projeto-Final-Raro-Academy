@@ -5,7 +5,7 @@ from django.urls import path
 
 from investments.models import Investment
 
-from .models import Account, Deposit
+from .models import Account, Deposit, Flag
 
 
 class AccountAdmin(admin.ModelAdmin):
@@ -26,10 +26,15 @@ class AccountAdmin(admin.ModelAdmin):
             if original.balance != obj.balance:
                 diff = obj.balance - original.balance
                 deposit = Deposit.objects.create(to_account=original, amount=diff)
-        
+
         super().save_model(request, obj, form, change)
 
     display_groups.short_description = "Turmas"
+
+
+class FlagAdmin(admin.ModelAdmin):
+    list_display = ("name", "active")
+    search_fields = ("name",)
 
 
 class CustomAdminSite(admin.AdminSite):
@@ -61,4 +66,7 @@ class CustomAdminSite(admin.AdminSite):
 
 custom_admin_site = CustomAdminSite(name="custom_admin")
 custom_admin_site.register(Account, AccountAdmin)
+custom_admin_site.register(Flag, FlagAdmin)
+
+
 admin.site = custom_admin_site
