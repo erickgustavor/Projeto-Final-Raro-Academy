@@ -33,7 +33,6 @@ class RegisterView(View):
 
     def post(self, request, *args, **kwargs):
         form = AccountRegistrationForm(request.POST)
-
         if form.is_valid():
             email = form.cleaned_data.get("email")
             username = form.cleaned_data.get("username")
@@ -64,7 +63,8 @@ class RegisterView(View):
             else:
                 celery_send_mail(subject, html_content, from_email, to_email)
 
-            return render(request, "registration/confirmation_sent.html")
+            messages.success(request, "Um email de confirmação foi enviado para a sua conta.")
+            return redirect("register")
 
         return render(request, "registration/register.html", {"form": form})
 

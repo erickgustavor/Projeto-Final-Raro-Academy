@@ -66,7 +66,7 @@ class LoginForm(forms.ModelForm):
 class AccountRegistrationForm(forms.ModelForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
     email = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
-    cpf = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
+    cpf = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', "data-mask": "000.000.000-00", "data-mask-selectonfocus": "true"},),max_length=11)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha")
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Senha")
 

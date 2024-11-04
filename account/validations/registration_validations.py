@@ -6,6 +6,8 @@ from account.models import Account
 def validate_cpf(cpf):
 
     cpf_validator = CPF()
+    if len(cpf) > 11:
+        raise ValidationError("CPF tem mais de 11 digitos.")
 
     if not cpf_validator.validate(cpf):
         raise ValidationError("CPF inválido.")

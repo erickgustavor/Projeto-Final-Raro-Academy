@@ -1,85 +1,46 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tela de Login</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #222;
-      color: #fff;
-    }
-    .form-container {
-      max-width: 400px;
-      margin: 50px auto;
-      padding: 30px;
-      background-color: #333;
-      border-radius: 8px;
-    }
-    .form-container h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .btn-login {
-      background-color: #1a73e8;
-      color: #fff;
-      border: none;
-    }
-    .links {
-      text-align: center;
-      margin-top: 15px;
-    }
-    .links a {
-      color: #aaa;
-      margin: 0 10px;
-      text-decoration: none;
-    }
-    .messages-error {
-      display: flex;
-      justify-content: center;
-      font-weight: bold;
-      margin-left: -40px;
-      padding: 5px;
-}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
 
-  </style>
-</head>
-<body>
-
-  <div class="form-container">
-    <h2>Login</h2>
-    <form method="post" action="">
-      {% csrf_token %}
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        {{ form.email }}
-      </div>
-      <div class="mb-3">
-        <label for="senha" class="form-label">Senha</label>
-        {{ form.password }}
-      </div>
-      <button type="submit" class="btn btn-login w-100">Login</button>
-    </form>
-    <div class="links">
-      <a href="{% url 'register' %}" > Cadastre-se</a>
-      <a href="{% url 'password-recovery' %}">Esqueceu a senha?</a>
+{% block navbar %}
+{% endblock %}
+{% block content %}
+<div class="form-container">
+  <img src="{% static 'images/logo.png' %}" alt="Teste" class="d-block mx-auto mb-4" width="100">
+  <h2>Login</h2>
+  <form method="post" action="">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      {{ form.email }}
     </div>
-    <div class="messages-error">
-      {% if messages %}
-      <ul>
-          {% for message in messages %}
-              {{ message }}
-          {% endfor %}
-      </ul>
-      {% endif %}
-      </div>
+    <div class="mb-3">
+      <label for="senha" class="form-label">Senha</label>
+      {{ form.password }}
+    </div>
+    <button type="submit" class="btn btn-login w-100 mb-4">Login</button>
+  </form>
+  <div class="links">
+    <a href="{% url 'register' %}"
+      class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover "> Cadastre-se</a>
+    <a href="{% url 'password-recovery' %}"
+      class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ml-10">Esqueceu a senha?</a>
   </div>
-  <p>
-    {% for error in form.non_field_errors %}
-        {{ error }}
-    {% endfor %} </p>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+  <div class="messages-error">
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      {{ message }}
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</div>
+<p>
+  {% for error in form.non_field_errors %}
+  {{ error }}
+  {% endfor %} </p>
+{% endblock %}

@@ -21,6 +21,11 @@ from .services.commit_transactions_service import CommitTrasactionService
 
 
 class TransactionView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = TransactionForm(user=request.user)
+
+        return render(request, "transaction_request.html", {"form": form, "balance": request.user.balance})
+
     def post(self, request):
         form = TransactionForm(request.POST, user=request.user)
 
@@ -56,7 +61,7 @@ class TransactionView(LoginRequiredMixin, View):
         for error in form.non_field_errors():
             messages.error(request, error)
 
-        return redirect("home")
+        return redirect("transaction")
 
 
 class ConfirmTransactionView(LoginRequiredMixin, View):

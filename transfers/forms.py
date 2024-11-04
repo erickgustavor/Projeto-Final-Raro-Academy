@@ -17,7 +17,7 @@ class TransactionForm(forms.Form):
         label="Novo contato",
         max_length=11,
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control','placeholder': 'Digite o CPF do novo contato'}),
+        widget=forms.TextInput(attrs={'class': 'form-control','placeholder': 'Digite o CPF do novo contato', "data-mask": "000.000.000-00", "data-mask-selectonfocus": "true"}),
     )
 
     amount = forms.DecimalField(
