@@ -23,29 +23,80 @@
 <body class="bg-dark text-light">
     <!-- Navbar -->
     {% block navbar %}
-    <nav class="navbar bg-base">
-        <a class="navbar-brand" href="{% url 'home' %}">
-            <img src="{% static 'images/logo.png' %}" alt="Logo do CAPS Bank" width="100"
-                class="d-inline-block align-text-top">
-        </a>
-        <div class="navbar-content">
-            <h1 class="navbar-text text-light" style="font-family: 'Lora', serif;">
-                Bem-vindo ao Bank CAPS
-            </h1>
+    <nav class="navbar navbar-expand-lg bg-base">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <!-- Logo e link para a página inicial -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logo.png' %}" alt="Logo do CAPS Bank" width="100"
+                    class="d-inline-block align-text-top">
+            </a>
+            <!-- Botão de toggle para navbar em dispositivos móveis -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% block links %}
+                <!-- Links e conteúdo da navbar -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active text-light" aria-current="page" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="{% url 'extract' %}">Extrato</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Transferências
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li><a class="dropdown-item text-light"
+                                    href="{% url 'completed-transactions' %}">Transferências
+                                    Realizadas</a></li>
+                            <li><a class="dropdown-item text-light" href="#">Nova Transferência</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Investimentos
+                        </a>
+                        <ul class="dropdown-menu bg-dark">
+                            <li>
+                                <a class="dropdown-item text-light" href="{% url 'my_investments' %}">Meus
+                                    Investimentos</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light" href="{% url 'product_list' %}">Novo
+                                    Investimento</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                {% endblock %}
+
+                <!-- Conteúdo adicional e saudação do usuário, centralizado -->
+                <div class="navbar-content mx-auto text-center">
+                    {% block navbar-content %}
+                    {% endblock %}
+                </div>
+                <span class="navbar-text text-light ms-3">
+                    {% block authenticated %}
+                    <!-- Saudação ao usuário -->
+                    Olá, {{ user.username }}!
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger text-light"> Sair </a>
+                    {% endblock %}
+                </span>
+            </div>
         </div>
-        <span class="navbar-text text-light">
-
-
-            {% block authenticated %}
-            <!-- Saudação ao usuário -->
-
-            Olá, {{ user.username }}!
-            <a href="{% url 'logout' %}" class="btn btn-outline-danger text-light"> Sair </a>
-            {% endblock %}
-        </span>
     </nav>
+
+
     {% endblock %}
+
 
     <!-- Conteúdo principal -->
     <div class="container mt-4">
