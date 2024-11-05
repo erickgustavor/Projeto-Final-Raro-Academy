@@ -1,5 +1,4 @@
 from celery import shared_task
-from caps_bank.tasks import celery_send_mail
 from .models import Transaction
 from .services.commit_transactions_service import CommitTrasactionService
 
