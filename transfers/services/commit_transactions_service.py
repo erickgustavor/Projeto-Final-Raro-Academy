@@ -1,14 +1,7 @@
-import os
-import random
-import string
-
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.utils import timezone
 
-from caps_bank.tasks import celery_send_mail, celery_send_mail
-from transfers.models import Transaction
+from caps_bank.tasks import celery_send_mail
 
 
 class CommitTrasactionService:
