@@ -1,12 +1,9 @@
 from datetime import timedelta
-from decimal import Decimal
 from itertools import groupby
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone

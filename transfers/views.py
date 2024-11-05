@@ -1,17 +1,13 @@
-from datetime import datetime, time
+from datetime import time
 from decimal import Decimal
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views import View
 
 from account.models import Account, Flag
-from caps_bank.tasks import celery_send_mail
 from transfers.models import Transaction
 from transfers.services.transaction_token_service import TransactionTokenService
 
@@ -24,7 +20,11 @@ class TransactionView(LoginRequiredMixin, View):
     def get(self, request):
         form = TransactionForm(user=request.user)
 
-        return render(request, "transaction_request.html", {"form": form, "balance": request.user.balance})
+        return render(
+            request,
+            "transaction_request.html",
+            {"form": form, "balance": request.user.balance},
+        )
 
     def post(self, request):
         form = TransactionForm(request.POST, user=request.user)
